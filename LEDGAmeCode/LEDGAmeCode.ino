@@ -1,10 +1,15 @@
-
 #define JUMP 1
 #define RUN 2
 #define NOPE 3
 #define FIX 4
 #define OFF 5
 #define OBSNUM 4 //How many obstacles?
+
+#define FROGGY 2
+#define OBSTPIN1 3
+#define OBSTPIN2 4
+#define OBSTPIN3 5
+
 long timeThis, timeLast;
 long timeLast2;
 long timeLast3;
