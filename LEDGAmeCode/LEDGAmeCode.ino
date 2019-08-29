@@ -42,6 +42,7 @@ void loop() {
   if (digitalRead(jump) == LOW && digitalRead(6) == HIGH) {
     Serial.println("You failed :( try again?");
     state = OFF;
+    //}
     delay(50);
   if (state != OFF) { // if the game is not off, start loading up obstacles
     if (timeThis - timeLast > 500) {
