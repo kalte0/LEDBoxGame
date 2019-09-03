@@ -22,7 +22,7 @@ int delayval = 500; // for Neo pixel
 int state; // variable for changing states
 int Binary;
 
-int Obst[11] = { 0, 1, 2, 5, 10, 20 , 40 , 80, 160, 64, 128};
+int Obst[11] = {128, 64, 160, 80, 40, 20, 10, 5, 2, 1, 0};
 
 void setup() {
   pinMode(ANIM1, OUTPUT);
@@ -36,7 +36,7 @@ void setup() {
 }
 
 void loop() {
-  runObst 
+
 
 RunObst (int slice) { 
 
