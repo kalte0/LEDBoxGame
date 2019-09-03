@@ -1,5 +1,11 @@
 #include <Adafruit_NeoPixel.h>
 
+//---------------Bit Stuff - Macros :) ----------------
+#define set_bit(var, pin)    var |= 1<<(unsigned char) pin //set the pin in that register to 1. 
+#define clr_bit(var, pin)   var &= ~(1<<(unsigned char)pin) // set the desired pin to 0
+#define test_bit(var, pin)    ((var & (1<<(unsigned char) pin)) >> pin) // 
+#define toggle_bit(var, pin)  var ^= 1<<(unsigned char) pin // name implies it pretty clearly 
+
 #define NUMPIXELS 8 // Change when we get a longer strip. 
 
 // --------------STATE NAMES-------------
@@ -38,7 +44,7 @@ void setup() {
 void loop() {
 
 
-RunObst (int slice) { 
+  int RunObst (int slice) {
 
   }
 
