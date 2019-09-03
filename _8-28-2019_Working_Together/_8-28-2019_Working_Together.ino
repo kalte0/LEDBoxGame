@@ -1,12 +1,5 @@
 #include <Adafruit_NeoPixel.h>
 
-//----------------BIT STUFF----------------------
-#define set_bit(var, pin)    var |= 1<<(unsigned char) pin)
-#define clr_bit(var, pin)   var &= ~(1<<(unsigned char)pin)
-#define test_bit(var, pin)    ((var & (1<<(unsigned char) pin)) >> pin)
-#define toggle_bit(var, pin)  var ^= 1<<(unsigned char) pin)
-
-
 #define NUMPIXELS 8 // Change when we get a longer strip. 
 
 // --------------STATE NAMES-------------
