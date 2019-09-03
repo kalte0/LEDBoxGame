@@ -1,9 +1,9 @@
 #include <Adafruit_NeoPixel.h>
 
 //---------------Bit Stuff - Macros :) ----------------
-#define set_bit(var, pin)    var |= 1<<(unsigned char) pin //set the pin in that register to 1. 
+#define set_bit(var, pin)   var |= 1<<(unsigned char) pin //set the pin in that register to 1. 
 #define clr_bit(var, pin)   var &= ~(1<<(unsigned char)pin) // set the desired pin to 0
-#define test_bit(var, pin)    ((var & (1<<(unsigned char) pin)) >> pin) // 
+#define test_bit(var, pin)    ((var & (1<<(unsigned char) pin)) >> pi n) // 
 #define toggle_bit(var, pin)  var ^= 1<<(unsigned char) pin // name implies it pretty clearly 
 
 #define NUMPIXELS 8 // Change when we get a longer strip. 
@@ -26,9 +26,9 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 int delayval = 500; // for Neo pixel
 
 int state; // variable for changing states
-int Binary;
+int binary;
 
-int Obst[11] = {128, 64, 160, 80, 40, 20, 10, 5, 2, 1, 0};
+int Obst[11] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x0A, 0x05, 0x02, 0x01, 0x00};
 
 void setup() {
   pinMode(ANIM1, OUTPUT);
@@ -42,13 +42,25 @@ void setup() {
 }
 
 void loop() {
+  binary = Obst[3];
+  Serial.println(binary, HEX);
+  for ( int x = 0; x < 8; x++ ) {
+if (test_bit(binary, x) == 1) {
+  Serial.print(x); Serial.print('\t'); Serial.println("Yup"); 
+}
+  }
+}
 
-
-  int RunObst (int slice) {
+/*int RunObst(int steps) {
+  binary = Obst[steps];
+  Serial.println(binary, HEX);
+  for ( int x = 0; x < 8; x++ ) { // look later to see if the 8 is what we want for the end bound
 
   }
+  delay(50);*/
 
-}
+
+
 
 
 /*
