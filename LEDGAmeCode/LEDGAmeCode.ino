@@ -24,7 +24,7 @@ int Check[10] = {0, 0, 0, 0, 1, 0, 0, 1, 0, 1};
 int Obst[10] = {0, 0, 0, 0, 1, 0, 0, 1, 0, 1}; //The course values, 0 no light, 1 light.
 void setup() {
   pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
+  pinMode(7, OUTPUT); // Hi, future Renata here: I think that these were for obstacles, but i was a lazy piece of garbage. 
   pinMode(8, OUTPUT);
   pinMode(9, OUTPUT);
   pinMode(run1, OUTPUT);

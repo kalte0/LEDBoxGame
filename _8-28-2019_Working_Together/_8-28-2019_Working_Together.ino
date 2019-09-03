@@ -19,9 +19,10 @@ long timeThis, timeLast; // Millis
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 int delayval = 500; // for Neo pixel
 
-int state; // variable for changing states.\
+int state; // variable for changing states
+int Binary;
 
-int Obst[8] 
+int Obst[11] = { 0, 1, 2, 5, 10, 20 , 40 , 80, 160, 64, 128};
 
 void setup() {
   pinMode(ANIM1, OUTPUT);
@@ -32,24 +33,33 @@ void setup() {
   Serial.begin(9600);
   pixels.begin();
 
-  state = OFF;
 }
 
 void loop() {
-  timeThis = millis();
-  if (timeThis - timeLast > 1000) {
-    for (int i = 0; i < NUMPIXELS; i++) {
-      pixels.setPixelColor(i, pixels.Color(0, 0, 150)); //make some major changes to this, can't have just one for loop that does it all for the obstacles. 
-      pixels.show();
-    }
-    timeLast = timeThis;
+  runObst 
+
+RunObst (int slice) { 
+
   }
+
+}
+
+
+/*
+  timeThis = millis();
 
   switch (state) {
     case OFF:
+    if (timeThis - timeLast > 50) {
+      if (digitalRead(BUTTON) == HIGH) {
+       Serial.println("Yupperoonies");
+       state = RUN;
+      }
+       timeLast = timeThis;
+    }
 
-    break;
-    
+      break;
+
     case JUMP:
 
       break;
@@ -57,11 +67,11 @@ void loop() {
     case RUN:
 
       break;
-    } 
-}
+  }
+  }
 
 
-/*  for(int i=0;i<NUMPIXELS;i++){
+  /*  for(int i=0;i<NUMPIXELS;i++){
     pixels.setPixelColor(i, pixels.Color(0,150,0));
     pixels.show();
     delay(delayval);
