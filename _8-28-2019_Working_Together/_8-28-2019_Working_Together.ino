@@ -44,32 +44,29 @@ void setup() {
 }
 
 void loop() {
-  /* timeThis = millis();
-    if (timeThis - timeLast > 500) {
-    digitalWrite(ANIM1, HIGH);
-    digitalWrite(ANIM2, HIGH);
-    digitalWrite(ANIMJUMP, HIGH);
+  timeThis = millis();
+  if (timeThis - timeLast > 500) {
+
+    switch (state) {
+      case OFF:
+        if (digitalRead(BUTTON) == HIGH) {
+          Serial.println("Switch");
+          state = RUN;
+        }
+        delay(50);
+        break;
+
+      case RUN:
+        Serial.println("RUN");
+        if (digitalRead(BUTTON) == HIGH) {
+          Serial.println("Switch");
+          state = OFF;
+          delay(100);
+        }
+        delay(50);
+        break;
     }
     timeThis = timeLast;
-  */
-  switch (state) {
-    case OFF:
-      if (digitalRead(BUTTON) == HIGH) {
-        Serial.println("Switch");
-        state = RUN;
-      }
-      delay(50);
-      break;
-
-    case RUN:
-      Serial.println("RUN");
-      if (digitalRead(BUTTON) == HIGH) {
-        Serial.println("Switch");
-        state = OFF;
-        delay(100); 
-      }
-      delay(50);
-      break;
   }
 }
 
