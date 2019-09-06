@@ -1,4 +1,8 @@
 #include <Adafruit_NeoPixel.h>
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 //---------------Bit Stuff - Macros :) ----------------
 #define set_bit(var, pin)   var |= 1<<(unsigned char) pin //set the pin in that register to 1. 
@@ -20,6 +24,13 @@
 #define PIN 5 // For Neopixel strip. 
 #define BUTTON 6
 
+// -------------------OLED DISPLAY---------------
+#define OLED_MOSI   9
+#define OLED_CLK   10
+#define OLED_DC    11
+#define OLED_CS    12
+#define OLED_RESET 13
+Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
 long timeThis, timeLast, timeLast2; // Millis
 
@@ -30,9 +41,13 @@ int binary; // store and read for the runObst function.
 int hurdle; // used to store if the last obstacle is lit up. This wll be used to test collision w/ Froggy.
 int buff; // this will be used to store if the button has been pushed and then released before allowing another jump.
 int shift; // this will store which stage in the array to use next, incremented each time runObst is activated.
-// guide to making obstacles: the beginning of the array will be activated first, 
+int score = 0; // score
+int scorewait; // this helps the program only count a point once. Once a point is won, this becomes 1. Then, once you're no longer jumping it returns to 0. Points are only counted when it is at 0, which is only once.
+
+
+// guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
-// basically, make the ones move from left to right here, and it will move correctly in the game. 
+// basically, make the ones move from left to right here, and it will move correctly in the game.
 int Obst[17] = {0x80, 0x40, 0x20, 0x10, 0x88, 0x44, 0x22, 0x91, 0x48, 0x24, 0x12, 0x09, 0x04, 0x02, 0x01};
 
 void setup() {
@@ -65,9 +80,17 @@ void loop() {
     }
     pixels.show();
     hurdle = 0;
+    score = 0;
     state = OFF;
   }
-
+  if (state == JUMP && hurdle == 1 && scorewait == 0) {
+    score++;
+    Serial.println(score);
+    scorewait = 1;
+  }
+  if (state != JUMP && scorewait == 1) {
+    scorewait = 0;
+  }
 
   switch (state) {
     case OFF:
@@ -112,7 +135,6 @@ void loop() {
         timeLast2 = timeThis;
       }
       if (timeThis - timeLast > 500) {
-        Serial.println("To RUN");
         digitalWrite(ANIMJUMP, LOW);
         digitalWrite(ANIM1, HIGH);
         buff = 1;
