@@ -14,15 +14,13 @@ void setup()   {
 
   display.begin(SSD1306_SWITCHCAPVCC);
   display.clearDisplay();
-  display.setTextSize(3);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.println("fred :)");
-
+  display.drawCircle(display.width() / 2, display.height() / 2, 15, WHITE);
+  display.drawCircle(display.width() / 2, display.height() / 2, 8, WHITE); 
+  display.drawPixel(64, 32, WHITE); 
   display.display();
 }
 
 void loop() {
-  
+
 }
 

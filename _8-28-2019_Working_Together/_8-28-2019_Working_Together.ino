@@ -110,6 +110,7 @@ void loop() {
         delay(50);
         digitalWrite(ANIM1, HIGH); // since the LEDS are toggling, need to set one to high before it starts.
         display.clearDisplay();
+        display.display(); 
         timeLast = timeThis;
         timeLast2 = timeThis;
         state = RUN;
@@ -193,9 +194,12 @@ int runObst() { // runs one stage of the obstacles based on the Obst[] array.
 int idleAnim() {
   display.clearDisplay();
   display.setTextSize(2);
-  display.setTextColor(WHITE);
+  display.setTextColor(BLACK, WHITE);
   display.setCursor(0, 0);
-  display.print("Play? High:"); display.println(highScore); 
+  display.print("Froggy Run");
+    display.setTextColor(WHITE, BLACK);
+  display.setCursor(10, 18);
+  display.print("High:"); display.println(highScore);
   display.display();
   display.startscrollleft(0x00, 0x0F);
 
