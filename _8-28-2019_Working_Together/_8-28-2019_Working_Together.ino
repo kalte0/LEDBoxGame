@@ -42,8 +42,9 @@ int hurdle; // used to store if the last obstacle is lit up. This wll be used to
 int buff; // this will be used to store if the button has been pushed and then released before allowing another jump.
 int shift; // this will store which stage in the array to use next, incremented each time runObst is activated.
 int score = 0; // score
+int highScore = 0;
 int scorewait; // this helps the program only count a point once. Once a point is won, this becomes 1. Then, once you're no longer jumping it returns to 0. Points are only counted when it is at 0, which is only once.
-
+int idle; // turns off and on idle function.
 
 // guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
@@ -57,6 +58,7 @@ void setup() {
   pinMode(PIN, OUTPUT);
   pinMode(BUTTON, INPUT);
   Serial.begin(9600);
+  display.begin(SSD1306_SWITCHCAPVCC);
   pixels.begin();
 
   for (int i = 0; i < 8; i++) {
@@ -64,7 +66,10 @@ void setup() {
   }
   pixels.show();
 
+  display.clearDisplay();
+
   state = OFF;
+  idleAnim();
 }
 
 void loop() {
@@ -80,12 +85,17 @@ void loop() {
     }
     pixels.show();
     hurdle = 0;
+    if (score > highScore) {
+      highScore = score;
+    }
     score = 0;
+    idleAnim();
     state = OFF;
   }
   if (state == JUMP && hurdle == 1 && scorewait == 0) {
     score++;
     Serial.println(score);
+
     scorewait = 1;
   }
   if (state != JUMP && scorewait == 1) {
@@ -93,16 +103,20 @@ void loop() {
   }
 
   switch (state) {
-    case OFF:
+    case OFF: //--------------------------------------------------------------------------
       shift = 0;
+
       if (digitalRead(BUTTON) == HIGH) {
         delay(50);
         digitalWrite(ANIM1, HIGH); // since the LEDS are toggling, need to set one to high before it starts.
+        display.clearDisplay();
+        timeLast = timeThis;
+        timeLast2 = timeThis;
         state = RUN;
       }
       break;
 
-    case RUN:
+    case RUN://--------------------------------------------------------------------------
       if (buff == 1) { // buff waits for button to be let go before allowing bcak to JUMP state.
         if ( digitalRead(BUTTON) == LOW) {
           buff = 0;
@@ -111,6 +125,7 @@ void loop() {
       if (buff == 0) {
         if (digitalRead(BUTTON) == HIGH ) {
           timeLast = timeThis;
+          timeLast2 = timeThis;
           state = JUMP ;
         }
       }
@@ -125,7 +140,7 @@ void loop() {
       }
       break;
 
-    case JUMP:
+    case JUMP://--------------------------------------------------------------------------
       digitalWrite(ANIM1, LOW);
       digitalWrite(ANIM2, LOW);
       digitalWrite(ANIMJUMP, HIGH);
@@ -175,7 +190,16 @@ int runObst() { // runs one stage of the obstacles based on the Obst[] array.
   }
 }
 
+int idleAnim() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 0);
+  display.print("Play? High:"); display.println(highScore); 
+  display.display();
+  display.startscrollleft(0x00, 0x0F);
 
+}
 
 
 
