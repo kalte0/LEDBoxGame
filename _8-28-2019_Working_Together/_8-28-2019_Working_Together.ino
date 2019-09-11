@@ -23,6 +23,7 @@
 #define ANIMJUMP 4
 #define PIN 5 // For Neopixel strip. 
 #define BUTTON 6
+#define RESET 7
 
 // -------------------OLED DISPLAY---------------
 #define OLED_MOSI   9
@@ -53,6 +54,7 @@ int y;
 // basically, make the ones move from left to right here, and it will move correctly in the game.
 int obstIdle[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 int obst1[17] = {0x80, 0x40, 0x20, 0x10, 0x88, 0x44, 0x22, 0x91, 0x48, 0x24, 0x12, 0x09, 0x04, 0x02, 0x01};
+int obst2[15] = {0x80, 0x40, 0x20, 0x90, 0x48, 0xA4, 0x52, 0xA9, 0x54, 0x2A, 0x15, 0x0A, 0x05, 0x02, 0x01}; 
 
 void setup() {
   pinMode(ANIM1, OUTPUT);
@@ -70,9 +72,9 @@ void setup() {
   pixels.show();
 
   display.clearDisplay();
+  display.display();
 
   state = OFF;
-  idleAnimCircle();
   digitalWrite(ANIM1, HIGH);
   shift = 0;
 }
@@ -80,10 +82,10 @@ void setup() {
 void loop() {
   timeThis = millis();
 
+  if (
+
   //-----------------------------------------Failure Detection----------
   if (state != JUMP && state != OFF && hurdle == 1) {
-    Serial.println("Wowoowoowowoowowwowowoowowowowowoowowwowowowowowowowowowowowowowwowowowowqowowoyousuck");
-    Serial.println("Please keep playing our stupid game");
     digitalWrite(ANIM1, LOW);
     digitalWrite(ANIM2, LOW);
     digitalWrite(ANIMJUMP, LOW);
@@ -91,12 +93,11 @@ void loop() {
       pixels.setPixelColor(i, pixels.Color(0, 0, 0));
     }
     pixels.show();
+    failAnim();
     hurdle = 0;
-    if (score > highScore) {
-      highScore = score;
-    }
+
     score = 0;
-    idleAnimCircle();
+    idleAnimText();
     digitalWrite(ANIM1, HIGH);
     shift = 0;
     Serial.println("Fail");
@@ -119,38 +120,36 @@ void loop() {
 
       if (digitalRead(BUTTON) == HIGH) {
         delay(50);
-        digitalWrite(ANIM1, HIGH); // since the LEDS are toggling, need to set one to high before it starts.
-        timeLast = timeThis;
-        timeLast2 = timeThis;
-        Serial.println("To RUN");
-        shift = 0;
-        startAnim(); 
         for (int i = 0; i < 8; i++) {
           pixels.setPixelColor(i, pixels.Color(0, 0, 0)); // LED strip off
         }
         pixels.show();
-        
+        Serial.println("To RUN");
+        shift = 0;
+        buff = 0;
+        startAnim();
+        timeLast = timeThis;
+        timeLast2 = timeThis;
         state = RUN;
       }
-      idleAnim();
+      else {
+        idleAnim();
+      }
+
       break;
 
 
-      
+
 
     case RUN://--------------------------------------------------------------------------  RUN
-      if (buff == 1) { // buff waits for button to be let go before allowing back to JUMP state.
-        if ( digitalRead(BUTTON) == LOW) {
-          buff = 0;
-        }
+      if (buff == 1 && digitalRead(BUTTON) == LOW) { // buff waits for button to be let go before allowing back to JUMP state.
+        buff = 0;
       }
-      if (buff == 0) {
-        if (digitalRead(BUTTON) == HIGH ) {
-          timeLast = timeThis;
-          timeLast2 = timeThis;
-          Serial.println("to JUMP");
-          state = JUMP ;
-        }
+      if (buff == 0 && digitalRead(BUTTON) == HIGH) {
+        timeLast = timeThis;
+        timeLast2 = timeThis;
+        Serial.println("to JUMP");
+        state = JUMP ;
       }
       if (timeThis - timeLast > 500) {
         timeLast = timeThis;
@@ -222,16 +221,7 @@ int idleAnim() {
     timeLast = timeThis;
   }
   if (timeThis - timeLast > 1000 && idle == 0) { // the millis time here is how long the CIRCLE will last
-    display.clearDisplay();
-    display.setTextSize(2);
-    display.setTextColor(BLACK, WHITE); //                  Text Animation
-    display.setCursor(0, 0);
-    display.print("Froggy Run");
-    display.setTextColor(WHITE, BLACK);
-    display.setCursor(10, 18);
-    display.print("High:"); display.println(highScore);
-    display.display();
-    display.startscrollleft(0x00, 0x0F);
+    idleAnimText();
     idle = 1;
     timeLast = timeThis;
   }
@@ -274,16 +264,83 @@ int idleAnimCircle() {
   }
 }
 
-int startAnim() {
-   display.clearDisplay();
-    display.setTextSize(2);
-    display.setTextColor(BLACK, WHITE); //                  Text Animation
-    display.setCursor(0, 0);
-    display.print("START GAME");
-    display.display(); 
+int idleAnimText() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(BLACK, WHITE); //                  Text Animation
+  display.setCursor(0, 0);
+  display.print("Froggy Run");
+  display.setTextColor(WHITE, BLACK);
+  display.setCursor(10, 18);
+  display.print("High:"); display.println(highScore);
+  display.display();
+  display.startscrollleft(0x00, 0x0F);
 }
 
-/*  idleAnimCircle();
+int startAnim() {
+  for (int x = 0; x < 5; x++) {
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setTextColor(BLACK, WHITE); //                  Text Animation for startup
+    display.setCursor(0, 0);
+    display.print("START GAME");
+    display.display();
+    delay(100);
+    display.clearDisplay();
+    display.setTextColor(WHITE, BLACK);
+    display.setCursor(0, 0);
+    display.print("START GAME");
+    display.display();
+    delay(100);
+  }
+  display.clearDisplay();
+  display.setTextColor(WHITE, BLACK);
+  display.setCursor(0, 10);
+  display.print("GOOD LUCK!");
+  display.display();
+  digitalWrite(ANIM1, HIGH);
+  digitalWrite(ANIM2, LOW);
+  digitalWrite(ANIMJUMP, LOW);
+}
+
+int failAnim() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE); //                  Text Animation for failure
+  display.setCursor(10, 8);
+  display.print("Game Over");
+  display.display();
+  delay(2000);
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setCursor(20, 8);
+  display.print("Score:"); display.println(score);
+  display.display();
+  delay(2000);
+
+  if (score > highScore) {
+    highScore = score;
+
+    for (int x = 0 ; x < 5; x++) {
+      display.clearDisplay();
+      display.setTextSize(2);
+      display.setCursor(0, 8);
+      display.setTextColor(WHITE);
+      display.print("HIGHSCORE");
+      display.display();
+      delay(100);
+      display.clearDisplay();
+      display.setTextSize(2);
+      display.setCursor(0, 8);
+      display.setTextColor(BLACK, WHITE);
+      display.print("HIGHSCORE");
+      display.display();
+      delay(100);
+    }
+  }
+}
+
+/*  idleAnimText();
     digitalWrite(ANIM1, HIGH);
     idle = 0;
     shift = 0; */ // wherever the code moves to off, include these three so the animation will work correctly.
