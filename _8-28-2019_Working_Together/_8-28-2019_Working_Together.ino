@@ -48,13 +48,23 @@ int scoreWait; // this helps the program only count a point once. Once a point i
 int idle; // helps program w/ timing millis for idle Animations
 int maxShift; // sets the highest shift value possible, for use in runObst function
 int y;
+int z; 
+int track = 0; // chooses which track to run.
+int delayval ; // will control how fast the game runs.
+int level = 0; // level is a series of 3 tracks, and have different speeds.
+int levelShift = 0; // level shift changes which group of 3 tracks it reads from the array of stages.
+int stage; // stage stores which of the clumped 3 is being played.  
 
 // guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
 // basically, make the ones move from left to right here, and it will move correctly in the game.
-int obstIdle[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
-int obst1[17] = {0x80, 0x40, 0x20, 0x10, 0x88, 0x44, 0x22, 0x91, 0x48, 0x24, 0x12, 0x09, 0x04, 0x02, 0x01};
-int obst2[15] = {0x80, 0x40, 0x20, 0x90, 0x48, 0xA4, 0x52, 0xA9, 0x54, 0x2A, 0x15, 0x0A, 0x05, 0x02, 0x01}; 
+int obstIdle[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};                                         //far---->player. full obst track.
+int obst1[15] = {0x80, 0x40, 0x20, 0x10, 0x88, 0x44, 0x22, 0x91, 0x48, 0x24, 0x12, 0x09, 0x04, 0x02, 0x01}; //10001001
+int obst2[15] = {0x80, 0x40, 0x20, 0x90, 0x48, 0xA4, 0x52, 0xA9, 0x54, 0x2A, 0x15, 0x0A, 0x05, 0x02, 0x01}; //10101001
+int obst3[16] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x8A, 0x45, 0xA2, 0x52, 0x28, 0x14, 0x0A, 0x05, 0x02, 0x01};//101000101
+int levelStages[9] = {1, 2, 3, 3, 2, 1, 2, 1, 3}; 
+//                    1        2        3 
+
 
 void setup() {
   pinMode(ANIM1, OUTPUT);
@@ -82,7 +92,6 @@ void setup() {
 void loop() {
   timeThis = millis();
 
-  if (
 
   //-----------------------------------------Failure Detection----------
   if (state != JUMP && state != OFF && hurdle == 1) {
@@ -107,8 +116,7 @@ void loop() {
   //------------------------------------------ScoreKeeping----------------
   if (state == JUMP && hurdle == 1 && scoreWait == 0) {
     score++;
-    Serial.println(score);
-
+    //Serial.println(score);
     scoreWait = 1;
   }
   if (state != JUMP && scoreWait == 1) {
@@ -130,6 +138,7 @@ void loop() {
         startAnim();
         timeLast = timeThis;
         timeLast2 = timeThis;
+        track = 1;
         state = RUN;
       }
       else {
@@ -187,11 +196,47 @@ void loop() {
 }
 
 
-int runObst() {// runs one stage of the obstacles based on the obst[] array.
-  binary = obst1[shift];
+int runObst() {
+
+  if (state == OFF) {
+    track = 0;
+    binary = obstIdle[shift];
+    maxShift = 8;
+  }
+
+if (level == 0) {
+  //delayval =
+  levelShift = 0;
+}
+  stage * levelShift = z; 
+
+track = levelStage[z];
+Serial.print("z : track"); Serial.print('\t'); Serial.println(z); Serial.print('\t'); Serial.println(track); 
+
+  else if (state != OFF) {
+    if (track == 1) {
+      binary = obst1[shift];
+      maxShift = 15;
+    }
+    if (track == 2) {
+      binary = obst2[shift];  
+      maxShift = 15;
+    }
+    if (track == 3) {
+      binary = obst3[shift];
+      maxShift = 16;
+    }
+  }
+
+
   shift++;
-  if (shift == 17) { // since the array is only 17 values long, (#0-10), once shift equals 11, set it back to 0.
+  if (shift == maxShift) { // since the array is only 17 values long, (#0-10), once shift equals 11, set it back to 0.
     shift = 0;
+    track++;
+    if (track == 3) {
+      track = 1;
+    }
+    Serial.println(track);
   }
 
   // Serial.print(binary, HEX); Serial.print('\t'); Serial.println(shift); // print info
