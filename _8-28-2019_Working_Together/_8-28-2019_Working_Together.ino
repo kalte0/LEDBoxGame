@@ -50,8 +50,9 @@ int maxShift; // sets the highest shift value possible, for use in runObst funct
 int y;
 int z;
 int track = 0; // chooses which track to run.
-int delayVal = 1000; // will control how fast the game runs.
+int delayVal = 500; // will control how fast the game runs.
 int level = 1; // level is a series of 3 tracks, and have different speeds.
+int hurdle2;
 
 // guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
@@ -111,7 +112,7 @@ void loop() {
     state = OFF;
   }
 
-  if (timeThis - timeLast2 > 800) {
+  if (timeThis - timeLast2 > delayVal) { // how long the obstacles will run
     runObst();
     timeLast2 = timeThis;
   }
@@ -135,7 +136,7 @@ void loop() {
           pixels.setPixelColor(i, pixels.Color(0, 0, 0)); // LED strip off
         }
         pixels.show();
-        Serial.println("To RUN");
+        // Serial.println("To RUN");
         shift = 0;
         buff = 0;
         startAnim();
@@ -159,18 +160,18 @@ void loop() {
       }
       if (buff == 0 && digitalRead(BUTTON) == HIGH) {
         timeLast = timeThis;
-        Serial.println("to JUMP");
+        // Serial.println("to JUMP");
         state = JUMP ;
       }
-      if (timeThis - timeLast > 1000) {
+      if (timeThis - timeLast > delayVal) {//how long each frame of animation will run.
         timeLast = timeThis;
         digitalWrite(ANIM1, !(digitalRead(ANIM1))); // toggle the two frames of animation.
         digitalWrite(ANIM2, !(digitalRead(ANIM2)));
       }
-   /*   if (timeThis - timeLast2 > delayVal - (delayVal * 0.2)) {
-        runObst();
-        timeLast2 = timeThis;
-      }*/
+      /*   if (timeThis - timeLast2 > delayVal - (delayVal * 0.2)) {
+           runObst();
+           timeLast2 = timeThis;
+         }*/
       break;
 
 
@@ -178,12 +179,11 @@ void loop() {
       digitalWrite(ANIM1, LOW);
       digitalWrite(ANIM2, LOW);
       digitalWrite(ANIMJUMP, HIGH);
-      
-      if (timeThis - timeLast > 1000) {
-        digitalWrite(ANIMJUMP, LOW);
+
+      if (timeThis - timeLast > delayVal * 2.2 or timeThis - timeLast > delayVal * 0.8 && hurdle == 0) { //how long the jump will last.
+      digitalWrite(ANIMJUMP, LOW);
         digitalWrite(ANIM1, HIGH);
         buff = 1;
-        runObst();
         timeLast = timeThis;
         Serial.println("To RUN");
         state = RUN;
@@ -209,7 +209,7 @@ int runObst() {
       maxShift = 15;
     }
     if (track == 2) {
-      if (level = 1) {
+      if (level == 1) {
         level = 2;
       }
       binary = obst2[shift];
@@ -220,11 +220,13 @@ int runObst() {
       maxShift = 16;
     }
   }
-  delayVal = 1000 / level;
-
-
-
-  Serial.println(delayVal);
+  if (level == 1) {
+    delayVal = 700;
+  }
+  else {
+    delayVal = 1000 / level;
+  }
+  Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
 
   shift++;
   if (shift == maxShift) { // since the array is only 17 values long, (#0-10), once shift equals 11, set it back to 0.
@@ -232,7 +234,7 @@ int runObst() {
     track++;
     if (track == 4) {
       track = 1;
-      level = 0.5 + level;
+      level++;
       //Later, add an animation for increased level.
     }
     // Serial.println(track);
@@ -245,17 +247,28 @@ int runObst() {
       pixels.setPixelColor(x, pixels.Color(0, 150, 0));
       if (x == 0) {
         hurdle = 1;
+        Serial.println("Hurdle");
+      }
+      if (x == 1) {
+        hurdle2 = 1;
+        Serial.println("Hurdle 2");
       }
     }
     else {
       pixels.setPixelColor(x, pixels.Color(0, 0, 0 ));
       if (x == 0) {
         hurdle = 0;
+
+      }
+      if (x == 1 ) {
+        hurdle2 = 0;
+
       }
     }
     pixels.show();
   }
 }
+
 
 int idleAnim() {
   if (timeThis - timeLast > 8000) { // the millis here will be how long the TEXT will last
