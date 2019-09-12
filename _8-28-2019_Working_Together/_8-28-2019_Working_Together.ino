@@ -48,12 +48,10 @@ int scoreWait; // this helps the program only count a point once. Once a point i
 int idle; // helps program w/ timing millis for idle Animations
 int maxShift; // sets the highest shift value possible, for use in runObst function
 int y;
-int z; 
+int z;
 int track = 0; // chooses which track to run.
-int delayval ; // will control how fast the game runs.
-int level = 0; // level is a series of 3 tracks, and have different speeds.
-int levelShift = 0; // level shift changes which group of 3 tracks it reads from the array of stages.
-int stage; // stage stores which of the clumped 3 is being played.  
+int delayVal = 1000; // will control how fast the game runs.
+int level = 1; // level is a series of 3 tracks, and have different speeds.
 
 // guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
@@ -62,8 +60,8 @@ int obstIdle[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};             
 int obst1[15] = {0x80, 0x40, 0x20, 0x10, 0x88, 0x44, 0x22, 0x91, 0x48, 0x24, 0x12, 0x09, 0x04, 0x02, 0x01}; //10001001
 int obst2[15] = {0x80, 0x40, 0x20, 0x90, 0x48, 0xA4, 0x52, 0xA9, 0x54, 0x2A, 0x15, 0x0A, 0x05, 0x02, 0x01}; //10101001
 int obst3[16] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x8A, 0x45, 0xA2, 0x52, 0x28, 0x14, 0x0A, 0x05, 0x02, 0x01};//101000101
-int levelStages[9] = {1, 2, 3, 3, 2, 1, 2, 1, 3}; 
-//                    1        2        3 
+int levelStages[9] = {1, 2, 3, 3, 2, 1, 2, 1, 3};
+//                    1        2        3
 
 
 void setup() {
@@ -113,6 +111,11 @@ void loop() {
     state = OFF;
   }
 
+  if (timeThis - timeLast2 > 800) {
+    runObst();
+    timeLast2 = timeThis;
+  }
+
   //------------------------------------------ScoreKeeping----------------
   if (state == JUMP && hurdle == 1 && scoreWait == 0) {
     score++;
@@ -156,19 +159,18 @@ void loop() {
       }
       if (buff == 0 && digitalRead(BUTTON) == HIGH) {
         timeLast = timeThis;
-        timeLast2 = timeThis;
         Serial.println("to JUMP");
         state = JUMP ;
       }
-      if (timeThis - timeLast > 500) {
+      if (timeThis - timeLast > 1000) {
         timeLast = timeThis;
         digitalWrite(ANIM1, !(digitalRead(ANIM1))); // toggle the two frames of animation.
         digitalWrite(ANIM2, !(digitalRead(ANIM2)));
       }
-      if (timeThis - timeLast2 > 400) {
+   /*   if (timeThis - timeLast2 > delayVal - (delayVal * 0.2)) {
         runObst();
         timeLast2 = timeThis;
-      }
+      }*/
       break;
 
 
@@ -176,12 +178,8 @@ void loop() {
       digitalWrite(ANIM1, LOW);
       digitalWrite(ANIM2, LOW);
       digitalWrite(ANIMJUMP, HIGH);
-
-      if (timeThis - timeLast2 > 400) {
-        runObst();
-        timeLast2 = timeThis;
-      }
-      if (timeThis - timeLast > 500) {
+      
+      if (timeThis - timeLast > 1000) {
         digitalWrite(ANIMJUMP, LOW);
         digitalWrite(ANIM1, HIGH);
         buff = 1;
@@ -202,16 +200,8 @@ int runObst() {
     track = 0;
     binary = obstIdle[shift];
     maxShift = 8;
+    level = 1;
   }
-
-if (level == 0) {
-  //delayval =
-  levelShift = 0;
-}
-  stage * levelShift = z; 
-
-track = levelStage[z];
-Serial.print("z : track"); Serial.print('\t'); Serial.println(z); Serial.print('\t'); Serial.println(track); 
 
   else if (state != OFF) {
     if (track == 1) {
@@ -219,7 +209,10 @@ Serial.print("z : track"); Serial.print('\t'); Serial.println(z); Serial.print('
       maxShift = 15;
     }
     if (track == 2) {
-      binary = obst2[shift];  
+      if (level = 1) {
+        level = 2;
+      }
+      binary = obst2[shift];
       maxShift = 15;
     }
     if (track == 3) {
@@ -227,16 +220,22 @@ Serial.print("z : track"); Serial.print('\t'); Serial.println(z); Serial.print('
       maxShift = 16;
     }
   }
+  delayVal = 1000 / level;
 
+
+
+  Serial.println(delayVal);
 
   shift++;
   if (shift == maxShift) { // since the array is only 17 values long, (#0-10), once shift equals 11, set it back to 0.
     shift = 0;
     track++;
-    if (track == 3) {
+    if (track == 4) {
       track = 1;
+      level = 0.5 + level;
+      //Later, add an animation for increased level.
     }
-    Serial.println(track);
+    // Serial.println(track);
   }
 
   // Serial.print(binary, HEX); Serial.print('\t'); Serial.println(shift); // print info
@@ -255,7 +254,6 @@ Serial.print("z : track"); Serial.print('\t'); Serial.println(z); Serial.print('
       }
     }
     pixels.show();
-    delay(10);
   }
 }
 
