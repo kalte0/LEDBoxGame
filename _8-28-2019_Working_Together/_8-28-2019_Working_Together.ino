@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <math.h>
 
 //---------------Bit Stuff - Macros :) ----------------
 #define set_bit(var, pin)   var |= 1<<(unsigned char) pin //set the pin in that register to 1. 
@@ -21,8 +22,9 @@
 #define ANIM1 2 // ANIM1 should be the run animation in the front. Will be the first to activate during run animation. 
 #define ANIM2 3
 #define ANIMJUMP 4
-#define PIN 5 // For Neopixel strip. 
-#define BUTTON 11
+#define PIN 12 // For Neopixel strip. 
+#define BUTTON 13
+#define PIEZO 11
 
 // -------------------OLED DISPLAY---------------
 #define OLED_MOSI   6
@@ -81,6 +83,7 @@ void setup() {
   display.clearDisplay();
   display.display();
 
+  tone(11, 1000, 1000); 
   state = OFF;
   digitalWrite(ANIM1, HIGH);
   shift = 0;
@@ -183,7 +186,7 @@ void loop() {
         digitalWrite(ANIM1, HIGH);
         buff = 1;
         timeLast = timeThis;
-        Serial.println("To RUN");
+       // Serial.println("To RUN");
         state = RUN;
       }
       break;
@@ -222,7 +225,7 @@ int runObst() {
     delayVal = 700;
   }
   else {
-   int a = pow(0.75, level);
+   double a = pow(0.75, level + 3);
     delayVal = 1600 * a;
   }
   Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
