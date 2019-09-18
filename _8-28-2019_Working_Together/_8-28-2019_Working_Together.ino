@@ -22,15 +22,14 @@
 #define ANIM2 3
 #define ANIMJUMP 4
 #define PIN 5 // For Neopixel strip. 
-#define BUTTON 6
-#define RESET 7
+#define BUTTON 11
 
 // -------------------OLED DISPLAY---------------
-#define OLED_MOSI   9
-#define OLED_CLK   10
-#define OLED_DC    11
-#define OLED_CS    12
-#define OLED_RESET 13
+#define OLED_MOSI   6
+#define OLED_CLK   7
+#define OLED_DC    8
+#define OLED_CS    9
+#define OLED_RESET 10
 Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
 long timeThis, timeLast, timeLast2; // Millis
@@ -52,7 +51,6 @@ int z;
 int track = 0; // chooses which track to run.
 int delayVal = 500; // will control how fast the game runs.
 int level = 1; // level is a series of 3 tracks, and have different speeds.
-int hurdle2;
 
 // guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
@@ -60,7 +58,7 @@ int hurdle2;
 int obstIdle[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};                                         //far---->player. full obst track.
 int obst1[15] = {0x80, 0x40, 0x20, 0x10, 0x88, 0x44, 0x22, 0x91, 0x48, 0x24, 0x12, 0x09, 0x04, 0x02, 0x01}; //10001001
 int obst2[15] = {0x80, 0x40, 0x20, 0x90, 0x48, 0xA4, 0x52, 0xA9, 0x54, 0x2A, 0x15, 0x0A, 0x05, 0x02, 0x01}; //10101001
-int obst3[16] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x8A, 0x45, 0xA2, 0x52, 0x28, 0x14, 0x0A, 0x05, 0x02, 0x01};//101000101
+int obst3[16] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x8A, 0x45, 0xA2, 0x51, 0x28, 0x14, 0x0A, 0x05, 0x02, 0x01};//101000101
 int levelStages[9] = {1, 2, 3, 3, 2, 1, 2, 1, 3};
 //                    1        2        3
 
@@ -180,8 +178,8 @@ void loop() {
       digitalWrite(ANIM2, LOW);
       digitalWrite(ANIMJUMP, HIGH);
 
-      if (timeThis - timeLast > delayVal * 2.2 or timeThis - timeLast > delayVal * 0.8 && hurdle == 0) { //how long the jump will last.
-      digitalWrite(ANIMJUMP, LOW);
+      if (timeThis - timeLast > delayVal * 2.5 or timeThis - timeLast > delayVal * 1 && hurdle == 0) { //how long the jump will last.
+        digitalWrite(ANIMJUMP, LOW);
         digitalWrite(ANIM1, HIGH);
         buff = 1;
         timeLast = timeThis;
@@ -224,7 +222,8 @@ int runObst() {
     delayVal = 700;
   }
   else {
-    delayVal = 1000 / level;
+   int a = pow(0.75, level);
+    delayVal = 1600 * a;
   }
   Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
 
@@ -247,22 +246,12 @@ int runObst() {
       pixels.setPixelColor(x, pixels.Color(0, 150, 0));
       if (x == 0) {
         hurdle = 1;
-        Serial.println("Hurdle");
-      }
-      if (x == 1) {
-        hurdle2 = 1;
-        Serial.println("Hurdle 2");
       }
     }
     else {
       pixels.setPixelColor(x, pixels.Color(0, 0, 0 ));
       if (x == 0) {
         hurdle = 0;
-
-      }
-      if (x == 1 ) {
-        hurdle2 = 0;
-
       }
     }
     pixels.show();
