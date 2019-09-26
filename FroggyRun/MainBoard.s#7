@@ -3037,11 +3037,6 @@ CONN_03
 <part name="OLED" library="FroggyRun" deviceset="OLED" device=""/>
 <part name="GND2" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="5V1" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="VIN" device="" value="5V"/>
-<part name="BUTTON" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_02" device="1X02_NO_SILK" package3d_urn="urn:adsk.eagle:package:38051/1"/>
-<part name="ANIMJUMP" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_02" device="1X02_NO_SILK" package3d_urn="urn:adsk.eagle:package:38051/1"/>
-<part name="ANIM2" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_02" device="1X02_NO_SILK" package3d_urn="urn:adsk.eagle:package:38051/1"/>
-<part name="ANIM1" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_02" device="1X02_NO_SILK" package3d_urn="urn:adsk.eagle:package:38051/1"/>
-<part name="LEDSTRIP" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_03" device="1X03_NO_SILK" package3d_urn="urn:adsk.eagle:package:38076/1"/>
 <part name="GND3" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND4" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND5" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
@@ -3054,6 +3049,11 @@ CONN_03
 <part name="U$3" library="FroggyRun" deviceset="RESISTOR" device="" value="1k"/>
 <part name="U$4" library="FroggyRun" deviceset="RESISTOR" device="" value="1k"/>
 <part name="U$5" library="FroggyRun" deviceset="RESISTOR" device="" value="1k"/>
+<part name="ANIM1" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_02" device="PTH3" package3d_urn="urn:adsk.eagle:package:38048/1"/>
+<part name="ANIM2" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_02" device="PTH3" package3d_urn="urn:adsk.eagle:package:38048/1"/>
+<part name="ANIMJUMP" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_02" device="PTH3" package3d_urn="urn:adsk.eagle:package:38048/1"/>
+<part name="LEDSTRIP\" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_03" device="LONGPADS" package3d_urn="urn:adsk.eagle:package:38068/1"/>
+<part name="BUTTON" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_02" device="PTH3" package3d_urn="urn:adsk.eagle:package:38048/1"/>
 </parts>
 <sheets>
 <sheet>
@@ -3073,26 +3073,6 @@ CONN_03
 </instance>
 <instance part="5V1" gate="G$1" x="71.12" y="119.38" smashed="yes">
 <attribute name="VALUE" x="71.12" y="122.174" size="1.778" layer="96" align="bottom-center"/>
-</instance>
-<instance part="BUTTON" gate="G$1" x="101.6" y="81.28" smashed="yes" rot="R180">
-<attribute name="VALUE" x="104.14" y="86.106" size="1.778" layer="96" font="vector" rot="R180"/>
-<attribute name="NAME" x="104.14" y="75.692" size="1.778" layer="95" font="vector" rot="R180"/>
-</instance>
-<instance part="ANIMJUMP" gate="G$1" x="142.24" y="55.88" smashed="yes" rot="R180">
-<attribute name="VALUE" x="144.78" y="60.706" size="1.778" layer="96" font="vector" rot="R180"/>
-<attribute name="NAME" x="144.78" y="50.292" size="1.778" layer="95" font="vector" rot="R180"/>
-</instance>
-<instance part="ANIM2" gate="G$1" x="119.38" y="43.18" smashed="yes" rot="R180">
-<attribute name="VALUE" x="121.92" y="48.006" size="1.778" layer="96" font="vector" rot="R180"/>
-<attribute name="NAME" x="121.92" y="37.592" size="1.778" layer="95" font="vector" rot="R180"/>
-</instance>
-<instance part="ANIM1" gate="G$1" x="99.06" y="35.56" smashed="yes" rot="R180">
-<attribute name="VALUE" x="101.6" y="40.386" size="1.778" layer="96" font="vector" rot="R180"/>
-<attribute name="NAME" x="101.6" y="29.972" size="1.778" layer="95" font="vector" rot="R180"/>
-</instance>
-<instance part="LEDSTRIP" gate="J$1" x="137.16" y="73.66" smashed="yes" rot="R180">
-<attribute name="VALUE" x="139.7" y="81.026" size="1.778" layer="96" font="vector" rot="R180"/>
-<attribute name="NAME" x="139.7" y="68.072" size="1.778" layer="95" font="vector" rot="R180"/>
 </instance>
 <instance part="GND3" gate="1" x="83.82" y="68.58" smashed="yes">
 <attribute name="VALUE" x="81.28" y="66.04" size="1.778" layer="96"/>
@@ -3131,6 +3111,26 @@ CONN_03
 <attribute name="NAME" x="82.296" y="76.2" size="1.778" layer="95" font="vector" rot="R90" align="bottom-center"/>
 <attribute name="VALUE" x="85.344" y="76.2" size="1.778" layer="96" font="vector" rot="R90" align="top-center"/>
 </instance>
+<instance part="ANIM1" gate="G$1" x="99.06" y="35.56" smashed="yes" rot="R180">
+<attribute name="VALUE" x="101.6" y="40.386" size="1.778" layer="96" font="vector" rot="R180"/>
+<attribute name="NAME" x="101.6" y="29.972" size="1.778" layer="95" font="vector" rot="R180"/>
+</instance>
+<instance part="ANIM2" gate="G$1" x="119.38" y="43.18" smashed="yes" rot="R180">
+<attribute name="VALUE" x="121.92" y="48.006" size="1.778" layer="96" font="vector" rot="R180"/>
+<attribute name="NAME" x="121.92" y="37.592" size="1.778" layer="95" font="vector" rot="R180"/>
+</instance>
+<instance part="ANIMJUMP" gate="G$1" x="142.24" y="55.88" smashed="yes" rot="R180">
+<attribute name="VALUE" x="144.78" y="60.706" size="1.778" layer="96" font="vector" rot="R180"/>
+<attribute name="NAME" x="144.78" y="50.292" size="1.778" layer="95" font="vector" rot="R180"/>
+</instance>
+<instance part="LEDSTRIP\" gate="J$1" x="137.16" y="73.66" smashed="yes" rot="R180">
+<attribute name="VALUE" x="139.7" y="81.026" size="1.778" layer="96" font="vector" rot="R180"/>
+<attribute name="NAME" x="139.7" y="68.072" size="1.778" layer="95" font="vector" rot="R180"/>
+</instance>
+<instance part="BUTTON" gate="G$1" x="101.6" y="81.28" smashed="yes" rot="R180">
+<attribute name="VALUE" x="104.14" y="86.106" size="1.778" layer="96" font="vector" rot="R180"/>
+<attribute name="NAME" x="104.14" y="75.692" size="1.778" layer="95" font="vector" rot="R180"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -3149,15 +3149,15 @@ CONN_03
 <pinref part="5V1" gate="G$1" pin="VIN"/>
 </segment>
 <segment>
-<pinref part="BUTTON" gate="G$1" pin="1"/>
 <wire x1="93.98" y1="81.28" x2="88.9" y2="81.28" width="0.1524" layer="91"/>
 <pinref part="5V2" gate="G$1" pin="VIN"/>
+<pinref part="BUTTON" gate="G$1" pin="1"/>
 </segment>
 <segment>
-<pinref part="LEDSTRIP" gate="J$1" pin="1"/>
 <wire x1="129.54" y1="76.2" x2="124.46" y2="76.2" width="0.1524" layer="91"/>
 <wire x1="124.46" y1="76.2" x2="124.46" y2="78.74" width="0.1524" layer="91"/>
 <pinref part="5V3" gate="G$1" pin="VIN"/>
+<pinref part="LEDSTRIP\" gate="J$1" pin="1"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -3174,10 +3174,10 @@ CONN_03
 <pinref part="GND2" gate="1" pin="GND"/>
 </segment>
 <segment>
-<pinref part="LEDSTRIP" gate="J$1" pin="3"/>
 <wire x1="129.54" y1="71.12" x2="124.46" y2="71.12" width="0.1524" layer="91"/>
 <wire x1="124.46" y1="71.12" x2="124.46" y2="68.58" width="0.1524" layer="91"/>
 <pinref part="GND7" gate="1" pin="GND"/>
+<pinref part="LEDSTRIP\" gate="J$1" pin="3"/>
 </segment>
 <segment>
 <pinref part="GND6" gate="1" pin="GND"/>
@@ -3236,8 +3236,8 @@ CONN_03
 <pinref part="MICROCONTROLLER" gate="G$1" pin="5"/>
 <wire x1="78.74" y1="66.04" x2="109.22" y2="66.04" width="0.1524" layer="91"/>
 <wire x1="109.22" y1="66.04" x2="109.22" y2="73.66" width="0.1524" layer="91"/>
-<pinref part="LEDSTRIP" gate="J$1" pin="2"/>
 <wire x1="109.22" y1="73.66" x2="129.54" y2="73.66" width="0.1524" layer="91"/>
+<pinref part="LEDSTRIP\" gate="J$1" pin="2"/>
 </segment>
 </net>
 <net name="N$6" class="0">
@@ -3245,38 +3245,38 @@ CONN_03
 <pinref part="MICROCONTROLLER" gate="G$1" pin="3"/>
 <wire x1="78.74" y1="55.88" x2="86.36" y2="55.88" width="0.1524" layer="91"/>
 <wire x1="86.36" y1="55.88" x2="86.36" y2="43.18" width="0.1524" layer="91"/>
-<pinref part="ANIM2" gate="G$1" pin="1"/>
 <wire x1="86.36" y1="43.18" x2="111.76" y2="43.18" width="0.1524" layer="91"/>
+<pinref part="ANIM2" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="N$7" class="0">
 <segment>
-<pinref part="ANIM1" gate="G$1" pin="1"/>
 <wire x1="81.28" y1="35.56" x2="91.44" y2="35.56" width="0.1524" layer="91"/>
 <pinref part="MICROCONTROLLER" gate="G$1" pin="2"/>
 <wire x1="78.74" y1="50.8" x2="81.28" y2="50.8" width="0.1524" layer="91"/>
 <wire x1="81.28" y1="50.8" x2="81.28" y2="35.56" width="0.1524" layer="91"/>
+<pinref part="ANIM1" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="N$10" class="0">
 <segment>
-<pinref part="ANIM2" gate="G$1" pin="2"/>
 <wire x1="106.68" y1="40.64" x2="111.76" y2="40.64" width="0.1524" layer="91"/>
 <pinref part="U$3" gate="G$1" pin="2"/>
+<pinref part="ANIM2" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="N$11" class="0">
 <segment>
-<pinref part="ANIMJUMP" gate="G$1" pin="2"/>
 <wire x1="127" y1="53.34" x2="134.62" y2="53.34" width="0.1524" layer="91"/>
 <pinref part="U$4" gate="G$1" pin="2"/>
+<pinref part="ANIMJUMP" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="N$12" class="0">
 <segment>
-<pinref part="ANIM1" gate="G$1" pin="2"/>
 <wire x1="86.36" y1="33.02" x2="91.44" y2="33.02" width="0.1524" layer="91"/>
 <pinref part="U$2" gate="G$1" pin="2"/>
+<pinref part="ANIM1" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="N$8" class="0">
@@ -3284,8 +3284,8 @@ CONN_03
 <pinref part="MICROCONTROLLER" gate="G$1" pin="4"/>
 <wire x1="78.74" y1="60.96" x2="88.9" y2="60.96" width="0.1524" layer="91"/>
 <wire x1="88.9" y1="60.96" x2="88.9" y2="55.88" width="0.1524" layer="91"/>
-<pinref part="ANIMJUMP" gate="G$1" pin="1"/>
 <wire x1="88.9" y1="55.88" x2="134.62" y2="55.88" width="0.1524" layer="91"/>
+<pinref part="ANIMJUMP" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="N$13" class="0">
@@ -3294,10 +3294,10 @@ CONN_03
 <wire x1="78.74" y1="81.28" x2="83.82" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="81.28" x2="86.36" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="86.36" y1="81.28" x2="86.36" y2="78.74" width="0.1524" layer="91"/>
-<pinref part="BUTTON" gate="G$1" pin="2"/>
 <wire x1="86.36" y1="78.74" x2="93.98" y2="78.74" width="0.1524" layer="91"/>
 <pinref part="U$5" gate="G$1" pin="2"/>
 <junction x="83.82" y="81.28"/>
+<pinref part="BUTTON" gate="G$1" pin="2"/>
 </segment>
 </net>
 </nets>
