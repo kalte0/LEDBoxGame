@@ -1,9 +1,19 @@
+// IDEAS TO ADD IN FUTURE:
+/* - nickname save with high score
+ *  - change obst color with level change
+ *  a nice song that doesn't sound like an ambulance. 
+ */
+
+
 #include <Adafruit_NeoPixel.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <math.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 32 // OLED display height, in pixels
 
 //---------------Bit Stuff - Macros :) ----------------
 #define set_bit(var, pin)   var |= 1<<(unsigned char) pin //set the pin in that register to 1. 
@@ -22,17 +32,18 @@
 #define ANIM1 2 // ANIM1 should be the run animation in the front. Will be the first to activate during run animation. 
 #define ANIM2 3
 #define ANIMJUMP 4
-#define PIN 12 // For Neopixel strip. 
-#define BUTTON 13
-#define PIEZO 11
+#define PIN 6 // For Neopixel strip. 
+#define BUTTON 5
+#define PIEZO 7
 
 // -------------------OLED DISPLAY---------------
-#define OLED_MOSI   6
-#define OLED_CLK   7
-#define OLED_DC    8
-#define OLED_CS    9
-#define OLED_RESET 10
-Adafruit_SSD1306 display(OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+#define OLED_MOSI  9
+#define OLED_CLK   10
+#define OLED_DC    11
+#define OLED_CS    12
+#define OLED_RESET 13
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
+                         OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
 long timeThis, timeLast, timeLast2; // Millis
 
@@ -83,7 +94,7 @@ void setup() {
   display.clearDisplay();
   display.display();
 
-  tone(11, 1000, 1000); 
+  tone(PIEZO, 0, 1000); 
   state = OFF;
   digitalWrite(ANIM1, HIGH);
   shift = 0;
