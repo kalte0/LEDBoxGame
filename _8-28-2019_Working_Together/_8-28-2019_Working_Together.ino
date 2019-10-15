@@ -1,8 +1,8 @@
 // IDEAS TO ADD IN FUTURE:
 /* - nickname save with high score
- *  - change obst color with level change
- *  a nice song that doesn't sound like an ambulance. 
- */
+    - change obst color with level change
+    a nice song that doesn't sound like an ambulance.
+*/
 
 
 #include <Adafruit_NeoPixel.h>
@@ -94,7 +94,7 @@ void setup() {
   display.clearDisplay();
   display.display();
 
-  tone(PIEZO, 0, 1000); 
+  tone(PIEZO, 0, 1000);
   state = OFF;
   digitalWrite(ANIM1, HIGH);
   shift = 0;
@@ -132,11 +132,13 @@ void loop() {
   //------------------------------------------ScoreKeeping----------------
   if (state == JUMP && hurdle == 1 && scoreWait == 0) {
     score++;
-    //Serial.println(score);
+    tone(PIEZO, 261.63, 150);
+    //Serial.println(score)
     scoreWait = 1;
   }
   if (state != JUMP && scoreWait == 1) {
     scoreWait = 0;
+    tone(PIEZO, 392.00, 200); 
   }
 
   switch (state) {
@@ -192,12 +194,12 @@ void loop() {
       digitalWrite(ANIM2, LOW);
       digitalWrite(ANIMJUMP, HIGH);
 
-      if (timeThis - timeLast > delayVal * 2.5 or timeThis - timeLast > delayVal * 1 && hurdle == 0) { //how long the jump will last.
+      if (timeThis - timeLast > delayVal * 3 or timeThis - timeLast > delayVal * 1 && hurdle == 0) { //how long the jump will last.
         digitalWrite(ANIMJUMP, LOW);
         digitalWrite(ANIM1, HIGH);
         buff = 1;
         timeLast = timeThis;
-       // Serial.println("To RUN");
+        // Serial.println("To RUN");
         state = RUN;
       }
       break;
@@ -236,7 +238,7 @@ int runObst() {
     delayVal = 700;
   }
   else {
-   double a = pow(0.75, level + 3);
+    double a = pow(0.75, level + 3);
     delayVal = 1600 * a;
   }
   Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
@@ -352,6 +354,13 @@ int startAnim() {
     display.display();
     delay(100);
   }
+  tone(PIEZO, 261.63);
+  delay(125);
+  tone(PIEZO, 329.63);
+  delay(125);
+  tone(PIEZO, 392.00);
+  delay(200);
+  noTone(PIEZO);
   display.clearDisplay();
   display.setTextColor(WHITE, BLACK);
   display.setCursor(0, 10);
@@ -398,6 +407,10 @@ int failAnim() {
     }
   }
 }
+
+
+
+
 
 /*  idleAnimText();
     digitalWrite(ANIM1, HIGH);

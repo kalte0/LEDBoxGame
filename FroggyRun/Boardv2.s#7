@@ -810,9 +810,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="SUPPLY3" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="5V" device=""/>
 <part name="GND1" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND3" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
-<part name="ANIM1" library="FroggyRun" deviceset="LED" device=""/>
-<part name="ANIM2" library="FroggyRun" deviceset="LED" device=""/>
-<part name="ANIMJUMP" library="FroggyRun" deviceset="LED" device=""/>
+<part name="U$2" library="FroggyRun" deviceset="LED" device=""/>
+<part name="U$3" library="FroggyRun" deviceset="LED" device=""/>
+<part name="U$4" library="FroggyRun" deviceset="LED" device=""/>
 <part name="GND4" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND5" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
 <part name="GND6" library="SparkFun-PowerSymbols" library_urn="urn:adsk.eagle:library:530" deviceset="GND" device=""/>
@@ -875,15 +875,15 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <instance part="GND3" gate="1" x="81.28" y="10.16" smashed="yes">
 <attribute name="VALUE" x="81.28" y="9.906" size="1.778" layer="96" align="top-center"/>
 </instance>
-<instance part="ANIM1" gate="G$1" x="106.68" y="35.56" smashed="yes">
+<instance part="U$2" gate="G$1" x="106.68" y="35.56" smashed="yes">
 <attribute name="NAME" x="110.236" y="30.988" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="112.395" y="30.988" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="ANIM2" gate="G$1" x="121.92" y="35.56" smashed="yes">
+<instance part="U$3" gate="G$1" x="121.92" y="35.56" smashed="yes">
 <attribute name="NAME" x="125.476" y="30.988" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="127.635" y="30.988" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="ANIMJUMP" gate="G$1" x="137.16" y="35.56" smashed="yes">
+<instance part="U$4" gate="G$1" x="137.16" y="35.56" smashed="yes">
 <attribute name="NAME" x="140.716" y="30.988" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="142.875" y="30.988" size="1.778" layer="96" rot="R90"/>
 </instance>
@@ -1136,21 +1136,21 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </net>
 <net name="N$1" class="0">
 <segment>
-<pinref part="ANIM1" gate="G$1" pin="C"/>
+<pinref part="U$2" gate="G$1" pin="C"/>
 <pinref part="RESISTOR2" gate="G$1" pin="1"/>
 <wire x1="106.68" y1="30.48" x2="106.68" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$2" class="0">
 <segment>
-<pinref part="ANIM2" gate="G$1" pin="C"/>
+<pinref part="U$3" gate="G$1" pin="C"/>
 <pinref part="RESISTOR3" gate="G$1" pin="1"/>
 <wire x1="121.92" y1="30.48" x2="121.92" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$4" class="0">
 <segment>
-<pinref part="ANIMJUMP" gate="G$1" pin="C"/>
+<pinref part="U$4" gate="G$1" pin="C"/>
 <pinref part="RESISTOR4" gate="G$1" pin="1"/>
 <wire x1="137.16" y1="30.48" x2="137.16" y2="27.94" width="0.1524" layer="91"/>
 </segment>
@@ -1158,7 +1158,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <net name="ANIM1" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="DIG2"/>
-<pinref part="ANIM1" gate="G$1" pin="A"/>
+<pinref part="U$2" gate="G$1" pin="A"/>
 <wire x1="63.5" y1="38.1" x2="106.68" y2="38.1" width="0.1524" layer="91"/>
 <label x="76.2" y="38.1" size="1.778" layer="95"/>
 </segment>
@@ -1166,7 +1166,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <net name="ANIM2" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="DIG3(PWM)"/>
-<pinref part="ANIM2" gate="G$1" pin="A"/>
+<pinref part="U$3" gate="G$1" pin="A"/>
 <wire x1="63.5" y1="43.18" x2="121.92" y2="43.18" width="0.1524" layer="91"/>
 <wire x1="121.92" y1="43.18" x2="121.92" y2="38.1" width="0.1524" layer="91"/>
 <label x="76.2" y="43.18" size="1.778" layer="95"/>
@@ -1175,7 +1175,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <net name="ANIMJUMP" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="DIG4"/>
-<pinref part="ANIMJUMP" gate="G$1" pin="A"/>
+<pinref part="U$4" gate="G$1" pin="A"/>
 <wire x1="63.5" y1="48.26" x2="137.16" y2="48.26" width="0.1524" layer="91"/>
 <wire x1="137.16" y1="48.26" x2="137.16" y2="38.1" width="0.1524" layer="91"/>
 <label x="76.2" y="48.26" size="1.778" layer="95"/>
