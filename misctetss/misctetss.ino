@@ -53,6 +53,7 @@ int space = SPACE_1;
 int nick1 = 0x40;
 int nick2 = 0x40;
 int nick3 = 0x40;
+int whichNick = nick1; 
 
 void setup() {
   Serial.begin(9600);
@@ -73,9 +74,14 @@ void loop() {
   y = key_read(5);
 
   if (y == KEY_SHORT_PRESS) {
-    writeNick(nick1, space);
+   if (space == SPACE_1) writeNick(nick1, space);
+   if (space == SPACE_2) writeNick(nick2, space); 
+   if (space == SPACE_3) writeNick(nick3, space); 
   }
   if (y == KEY_LONG_PRESS){ 
+   if (space == SPACE_1) space = SPACE_2;
+   else if (space == SPACE_2) space = SPACE_3;
+   else if (space == SPACE_3) space = SPACE_1; 
   Serial.print("long");
   }
   
