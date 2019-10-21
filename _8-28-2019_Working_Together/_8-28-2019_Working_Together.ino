@@ -1,7 +1,6 @@
 // IDEAS TO ADD IN FUTURE:
 /* - nickname save with high score
     - change obst color with level change
-    a nice song that doesn't sound like an ambulance.
 */
 
 
@@ -27,6 +26,7 @@
 #define JUMP 1
 #define RUN 2
 #define OFF 3
+#define NICKNAME 4
 
 // ----------------------PINS-----------------
 #define ANIM1 2 // ANIM1 should be the run animation in the front. Will be the first to activate during run animation. 
@@ -44,6 +44,26 @@
 #define OLED_RESET 13
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
                          OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+
+ //------------- key_read defines -----
+ 
+#define KEY_PRESSED HIGH //state of key being pressed
+#define KEY_NO_PRESS 0 //key not pressed
+#define KEY_SHORT_PRESS 1 //key pressed short
+#define KEY_LONG_PRESS 2 //key pressed long
+#define KEY_DURATION 500 //cycle count, minimum threshold to test for long presses
+
+unsigned long key_read(unsigned char pin)  {
+  unsigned long count = 0;
+  if (digitalRead(pin) != KEY_PRESSED) return KEY_NO_PRESS; //key not pressed
+  //key is pressed
+  while (digitalRead(pin) == KEY_PRESSED) {
+    count += 1; //increment count if key is continuously pressed
+    delay(1);
+  }
+  if (count > KEY_DURATION) return KEY_LONG_PRESS;
+  else return KEY_SHORT_PRESS;
+}
 
 long timeThis, timeLast, timeLast2; // Millis
 
@@ -64,6 +84,7 @@ int z;
 int track = 0; // chooses which track to run.
 int delayVal = 500; // will control how fast the game runs.
 int level = 1; // level is a series of 3 tracks, and have different speeds.
+int downWait; // turns to one when there is an obtacle under the jump, tells the player to immediatley go back down when they have gotten over that obstacle.
 
 // guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
@@ -132,13 +153,14 @@ void loop() {
   //------------------------------------------ScoreKeeping----------------
   if (state == JUMP && hurdle == 1 && scoreWait == 0) {
     score++;
+    pointAnim();
     tone(PIEZO, 261.63, 150);
     //Serial.println(score)
     scoreWait = 1;
   }
   if (state != JUMP && scoreWait == 1) {
     scoreWait = 0;
-    tone(PIEZO, 392.00, 200); 
+    tone(PIEZO, 392.00, 200);
   }
 
   switch (state) {
@@ -193,15 +215,23 @@ void loop() {
       digitalWrite(ANIM1, LOW);
       digitalWrite(ANIM2, LOW);
       digitalWrite(ANIMJUMP, HIGH);
-
-      if (timeThis - timeLast > delayVal * 3 or timeThis - timeLast > delayVal * 1 && hurdle == 0) { //how long the jump will last.
+      if (hurdle == 1) {
+        downWait = 1;
+      }
+      if (timeThis - timeLast > delayVal * 3 or downWait == 1 && hurdle == 0) { //how long the jump will last.
         digitalWrite(ANIMJUMP, LOW);
         digitalWrite(ANIM1, HIGH);
         buff = 1;
         timeLast = timeThis;
         // Serial.println("To RUN");
         state = RUN;
+        downWait = 0;
       }
+      break;
+
+    case NICKNAME:
+      display.clearDisplay();
+      
       break;
   }
   timeThis = timeLast;
@@ -234,13 +264,10 @@ int runObst() {
       maxShift = 16;
     }
   }
-  if (level == 1) {
-    delayVal = 700;
-  }
-  else {
-    double a = pow(0.75, level + 3);
-    delayVal = 1600 * a;
-  }
+
+  double a = pow(0.80, level);
+  delayVal = 850 * a;
+
   Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
 
   shift++;
@@ -372,13 +399,21 @@ int startAnim() {
 }
 
 int failAnim() {
+
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(WHITE); //                  Text Animation for failure
   display.setCursor(10, 8);
   display.print("Game Over");
   display.display();
-  delay(2000);
+  tone(PIEZO, 329.63); // E4
+  delay(100);
+  tone(PIEZO, 261.63); // C4
+  delay(100);
+  tone(PIEZO, 220.00); // A3
+  delay(100);
+  noTone(PIEZO);
+  delay(1200);
   display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(20, 8);
@@ -396,6 +431,7 @@ int failAnim() {
       display.setTextColor(WHITE);
       display.print("HIGHSCORE");
       display.display();
+      tone(PIEZO, 261.63); // C4
       delay(100);
       display.clearDisplay();
       display.setTextSize(2);
@@ -403,11 +439,24 @@ int failAnim() {
       display.setTextColor(BLACK, WHITE);
       display.print("HIGHSCORE");
       display.display();
+      tone(PIEZO, 392.00); // G4
       delay(100);
     }
+    noTone(PIEZO);
+    state = NICKNAME;
   }
 }
 
+int pointAnim() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 0);
+  display.print("Level:"); display.print(level);
+  display.setCursor(0, 18);
+  display.print("Score:"); display.print(score);
+  display.display();
+}
 
 
 
