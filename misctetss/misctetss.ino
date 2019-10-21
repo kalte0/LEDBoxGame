@@ -14,7 +14,8 @@
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
-#define LINES_HEIGHT 20
+#define LINES_HEIGHT 30
+#define LETTER_HEIGHT 5
 
 #define SPACE_1 10
 #define SPACE_2 49
@@ -46,10 +47,12 @@ unsigned long key_read(unsigned char pin)  {
 }
 
 
-int x = 0x40;
 int y;
 int b;
 int space = SPACE_1;
+int nick1 = 0x40;
+int nick2 = 0x40;
+int nick3 = 0x40;
 
 void setup() {
   Serial.begin(9600);
@@ -65,26 +68,41 @@ void setup() {
   display.display();
 }
 
+
 void loop() {
-  if (timeThis - timeLast > 500) {
-    if (b == 0) {
-      line_on(space);
-      b = 1;
-    }
-    else if (b == 1) {
-      line_off(space);
-      b = 0;
-    }
-  }
   y = key_read(5);
+
   if (y == KEY_SHORT_PRESS) {
-    x++;
-    if (x == 0x5B) x = 0x41;
-    Serial.write(x);
+    writeNick(nick1, space);
   }
-  if (y == KEY_LONG_PRESS) Serial.print("long");
+  if (y == KEY_LONG_PRESS){ 
+  Serial.print("long");
+  }
+  
   delay(10);
 
 
 }
+
+int writeNick(int nick, int SPACE) {
+  nick++;
+  if (nick == 0x5B) nick = 0x41;
+  Serial.write(nick);
+  display.clearDisplay();
+  display.setCursor(SPACE + 8, LETTER_HEIGHT);
+  display.setTextSize(3);
+  display.setTextColor(WHITE);
+  display.print((char)nick);
+  line_on(SPACE_1);
+  line_on(SPACE_2);
+  line_on(SPACE_3);
+  display.display();
+  if (space == SPACE_1) nick1 = nick;
+  if (space == SPACE_2) nick2 = nick; 
+  if (space == SPACE_3) nick3 = nick; 
+ 
+}
+
+
+
 
