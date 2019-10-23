@@ -1,6 +1,5 @@
 // IDEAS TO ADD IN FUTURE:
-/* - nickname save with high score
-    - change obst color with level change
+/*  - change obst color with level change
     NAE = Nickname code for Ae
 */
 
@@ -110,6 +109,8 @@ int obst1[15] = {0x80, 0x40, 0x20, 0x10, 0x88, 0x44, 0x22, 0x91, 0x48, 0x24, 0x1
 int obst2[15] = {0x80, 0x40, 0x20, 0x90, 0x48, 0xA4, 0x52, 0xA9, 0x54, 0x2A, 0x15, 0x0A, 0x05, 0x02, 0x01}; //10101001
 int obst3[16] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x8A, 0x45, 0xA2, 0x51, 0x28, 0x14, 0x0A, 0x05, 0x02, 0x01};//101000101
 int levelStages[9] = {1, 2, 3, 3, 2, 1, 2, 1, 3};
+int blue; 
+int red;
 //                    1        2        3
 
 
@@ -345,11 +346,14 @@ int runObst() {
     // Serial.println(track);
   }
 
+  red = map(level, 0, 10, 0, 255);
+  blue = 255 - red; 
+
   // Serial.print(binary, HEX); Serial.print('\t'); Serial.println(shift); // print info
   for ( int x = 0; x < 8; x++ ) { // this for loops writes each LED in the strip based on var binary.
 
     if (test_bit(binary, x) == 1) {
-      pixels.setPixelColor(x, pixels.Color(0, 150, 0));
+      pixels.setPixelColor(x, pixels.Color(red, 0, blue));
       if (x == 0) {
         hurdle = 1;
       }
@@ -422,7 +426,7 @@ int idleAnimText() {
   display.setCursor(0, 0);
   display.print("Froggy Run");
   display.setTextColor(WHITE);
-  display.setCursor(30, 18);
+  display.setCursor(10, 18);
   display.print((char)nick1);
   display.print((char)nick2); 
   display.print((char)nick3); 
