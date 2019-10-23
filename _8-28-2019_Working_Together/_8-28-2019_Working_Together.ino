@@ -1,6 +1,7 @@
 // IDEAS TO ADD IN FUTURE:
 /* - nickname save with high score
     - change obst color with level change
+    NAE = Nickname code for Ae
 */
 
 
@@ -45,8 +46,8 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
                          OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
- //------------- key_read defines -----
- 
+//------------- key_read defines -----
+
 #define KEY_PRESSED HIGH //state of key being pressed
 #define KEY_NO_PRESS 0 //key not pressed
 #define KEY_SHORT_PRESS 1 //key pressed short
@@ -64,6 +65,16 @@ unsigned long key_read(unsigned char pin)  {
   if (count > KEY_DURATION) return KEY_LONG_PRESS;
   else return KEY_SHORT_PRESS;
 }
+
+//---------------------SPACES for Nicknames-----------
+#define SPACE_1 10
+#define SPACE_2 49
+#define SPACE_3 88
+#define line_on(space)  display.drawLine(space, LINES_HEIGHT, space + 30, LINES_HEIGHT, WHITE);
+#define LINES_HEIGHT 30
+#define LETTER_HEIGHT 5
+
+
 
 long timeThis, timeLast, timeLast2; // Millis
 
@@ -85,6 +96,11 @@ int track = 0; // chooses which track to run.
 int delayVal = 500; // will control how fast the game runs.
 int level = 1; // level is a series of 3 tracks, and have different speeds.
 int downWait; // turns to one when there is an obtacle under the jump, tells the player to immediatley go back down when they have gotten over that obstacle.
+int space = SPACE_1;
+int nick1 = 0x41;
+int nick2 = 0x41; //save the three letters of the top score nickname
+int nick3 = 0x41;
+int b; // used in nickname stage
 
 // guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
@@ -126,7 +142,7 @@ void loop() {
 
 
   //-----------------------------------------Failure Detection----------
-  if (state != JUMP && state != OFF && hurdle == 1) {
+  if (state != JUMP && state != OFF && state != NICKNAME && hurdle == 1) {
     digitalWrite(ANIM1, LOW);
     digitalWrite(ANIM2, LOW);
     digitalWrite(ANIMJUMP, LOW);
@@ -136,13 +152,17 @@ void loop() {
     pixels.show();
     failAnim();
     hurdle = 0;
-
-    score = 0;
     idleAnimText();
+    score = 0;
+    delay(200);
     digitalWrite(ANIM1, HIGH);
     shift = 0;
     Serial.println("Fail");
-    state = OFF;
+    nick1 = 0x40;
+    nick2 = 0x41;
+    nick3 = 0x41;
+    idleAnim();
+    display.clearDisplay();
   }
 
   if (timeThis - timeLast2 > delayVal) { // how long the obstacles will run
@@ -229,9 +249,52 @@ void loop() {
       }
       break;
 
-    case NICKNAME:
-      display.clearDisplay();
-      
+    case NICKNAME://----------------------------------------------------------------------- NICKNAME
+
+      y = key_read(BUTTON);
+      if (timeThis - timeLast > 600) {
+        if (b == 0) {
+          lineAll();
+          display.drawLine(0, LINES_HEIGHT - 3, 128, LINES_HEIGHT - 3, BLACK);
+          b = 1;
+          display.display();
+        }
+        else if (b == 1) {
+          lineAll();
+          display.drawLine(space, LINES_HEIGHT - 3, space + 30, LINES_HEIGHT - 3, WHITE);
+          b = 0;
+          display.display();
+        }
+        timeLast = timeThis;
+      }
+      if (y == KEY_SHORT_PRESS) {
+        if (space == SPACE_1) addNick(nick1);
+        if (space == SPACE_2) addNick(nick2);
+        if (space == SPACE_3) addNick(nick3);
+        for (int i = 0; i < 30; i++) display.drawLine(space + i, LETTER_HEIGHT, space + i, LETTER_HEIGHT + 20, BLACK);
+        display.display();
+        display.setTextSize(3);
+        display.setTextColor(WHITE);
+        display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
+        display.print((char)nick1);
+        display.setCursor(SPACE_2 + 8, LETTER_HEIGHT);
+        display.print((char)nick2);
+        display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
+        display.print((char)nick3);
+        display.display();
+      }
+      if (y == KEY_LONG_PRESS) {
+        if (space == SPACE_1) space = SPACE_2;
+        else if (space == SPACE_2) space = SPACE_3;
+        else if (space == SPACE_3) {
+          space = SPACE_1;
+          idleAnimText();
+          digitalWrite(ANIM1, HIGH);
+          state = OFF;
+        }
+        Serial.print("long");
+      }
+
       break;
   }
   timeThis = timeLast;
@@ -240,7 +303,7 @@ void loop() {
 
 int runObst() {
 
-  if (state == OFF) {
+  if (state == OFF or state == NICKNAME) {
     track = 0;
     binary = obstIdle[shift];
     maxShift = 8;
@@ -358,9 +421,13 @@ int idleAnimText() {
   display.setTextColor(BLACK, WHITE); //                  Text Animation
   display.setCursor(0, 0);
   display.print("Froggy Run");
-  display.setTextColor(WHITE, BLACK);
-  display.setCursor(10, 18);
-  display.print("High:"); display.println(highScore);
+  display.setTextColor(WHITE);
+  display.setCursor(30, 18);
+  display.print((char)nick1);
+  display.print((char)nick2); 
+  display.print((char)nick3); 
+  display.print(":"); 
+  display.println(highScore);
   display.display();
   display.startscrollleft(0x00, 0x0F);
 }
@@ -444,6 +511,10 @@ int failAnim() {
     }
     noTone(PIEZO);
     state = NICKNAME;
+
+  }
+  else {
+    state = OFF;
   }
 }
 
@@ -458,8 +529,21 @@ int pointAnim() {
   display.display();
 }
 
+int addNick(int nick) {
+  nick++;
+  if (nick == 0x5B) nick = 0x41;
+  // Serial.write(nick);
+  if (space == SPACE_1) nick1 = nick;
+  if (space == SPACE_2) nick2 = nick;
+  if (space == SPACE_3) nick3 = nick;
 
+}
 
+int lineAll() {
+  line_on(SPACE_1);
+  line_on(SPACE_2);
+  line_on(SPACE_3);
+}
 
 /*  idleAnimText();
     digitalWrite(ANIM1, HIGH);

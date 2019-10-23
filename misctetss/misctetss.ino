@@ -51,18 +51,16 @@ int y;
 int b;
 int space = SPACE_1;
 int nick1 = 0x40;
-int nick2 = 0x40;
-int nick3 = 0x40;
-int whichNick = nick1; 
+int nick2 = 0x41;
+int nick3 = 0x41;
+int whichNick = 1;
+
 
 void setup() {
   Serial.begin(9600);
   pinMode(5, INPUT);
   display.begin();
   display.clearDisplay();
-  /*  display.drawLine(10, LINES_HEIGHT, 40, LINES_HEIGHT, WHITE);
-    display.drawLine(49, LINES_HEIGHT, 79, LINES_HEIGHT, WHITE);
-    display.drawLine(88, LINES_HEIGHT, 118, LINES_HEIGHT, WHITE);*/
   line_on(SPACE_1);
   line_on(SPACE_2);
   line_on(SPACE_3);
@@ -71,43 +69,74 @@ void setup() {
 
 
 void loop() {
+  timeThis = millis();
   y = key_read(5);
 
+  if (timeThis - timeLast > 600) {
+    if (b == 1) b = 0;
+    else if (b == 0) b = 1; // there's gotta be a better way to do this toggle.
+    timeLast = timeThis;
+  }
+
   if (y == KEY_SHORT_PRESS) {
-   if (space == SPACE_1) writeNick(nick1, space);
-   if (space == SPACE_2) writeNick(nick2, space); 
-   if (space == SPACE_3) writeNick(nick3, space); 
+    if (space == SPACE_1) addNick(nick1);
+    if (space == SPACE_2) addNick(nick2);
+    if (space == SPACE_3) addNick(nick3);
+    for (int i = 0; i < 15; i++) {
+      display.fillRect(space + i, LETTER_HEIGHT + i / 2, space - i, LETTER_HEIGHT - i / 2, BLACK);
+      display.display();
+      delay(1); 
+    }
+    display.setTextSize(3);
+    display.setTextColor(WHITE);
+    display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
+    display.print((char)nick1);
+    display.setCursor(SPACE_2 + 8, LETTER_HEIGHT);
+    display.print((char)nick2);
+    display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
+    display.print((char)nick3);
+    display.display();
   }
-  if (y == KEY_LONG_PRESS){ 
-   if (space == SPACE_1) space = SPACE_2;
-   else if (space == SPACE_2) space = SPACE_3;
-   else if (space == SPACE_3) space = SPACE_1; 
-  Serial.print("long");
+  if (y == KEY_LONG_PRESS) {
+    if (space == SPACE_1) space = SPACE_2;
+    else if (space == SPACE_2) space = SPACE_3;
+    else if (space == SPACE_3) space = SPACE_1;
+    Serial.print("long");
   }
-  
-  delay(10);
+
+  if (b == 0) {
+    lineAll();
+    display.drawLine(0, LINES_HEIGHT - 3, 128, LINES_HEIGHT - 3, BLACK);
+    Serial.println("b=0");
+    display.display();
+  }
+  else if (b == 1) {
+    lineAll();
+    display.drawLine(space, LINES_HEIGHT - 3, space + 30, LINES_HEIGHT - 3, WHITE);
+    Serial.println("b=1");
+    display.display();
+  }
+
 
 
 }
 
-int writeNick(int nick, int SPACE) {
+int addNick(int nick) {
   nick++;
   if (nick == 0x5B) nick = 0x41;
-  Serial.write(nick);
-  display.clearDisplay();
-  display.setCursor(SPACE + 8, LETTER_HEIGHT);
-  display.setTextSize(3);
-  display.setTextColor(WHITE);
-  display.print((char)nick);
+  // Serial.write(nick);
+  if (space == SPACE_1) nick1 = nick;
+  if (space == SPACE_2) nick2 = nick;
+  if (space == SPACE_3) nick3 = nick;
+
+}
+int lineAll() {
   line_on(SPACE_1);
   line_on(SPACE_2);
   line_on(SPACE_3);
-  display.display();
-  if (space == SPACE_1) nick1 = nick;
-  if (space == SPACE_2) nick2 = nick; 
-  if (space == SPACE_3) nick3 = nick; 
- 
 }
+
+
 
 
 
