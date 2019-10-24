@@ -3,8 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
-
+#include <EEPROM.h>
 
 #define KEY_PRESSED HIGH //state of key being pressed
 #define KEY_NO_PRESS 0 //key not pressed
@@ -54,10 +53,12 @@ int nick1 = 0x40;
 int nick2 = 0x41;
 int nick3 = 0x41;
 int whichNick = 1;
+int eeAddress = 0;
 
 
 void setup() {
   Serial.begin(9600);
+
   pinMode(5, INPUT);
   display.begin();
   display.clearDisplay();
@@ -65,6 +66,12 @@ void setup() {
   line_on(SPACE_2);
   line_on(SPACE_3);
   display.display();
+  Serial.println((char)EEPROM.get(eeAddress, nick1));
+  Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
+  Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
+  nick1 = 0x40;
+  nick2 = 0x41;
+  nick3 = 0x41;
 }
 
 
@@ -82,11 +89,8 @@ void loop() {
     if (space == SPACE_1) addNick(nick1);
     if (space == SPACE_2) addNick(nick2);
     if (space == SPACE_3) addNick(nick3);
-    for (int i = 0; i < 15; i++) {
-      display.fillRect(space + i, LETTER_HEIGHT + i / 2, space - i, LETTER_HEIGHT - i / 2, BLACK);
-      display.display();
-      delay(1); 
-    }
+    for (int i = 0; i < 30; i++) display.drawLine(space + i, LETTER_HEIGHT, space + i, LETTER_HEIGHT + 20, BLACK);
+    display.display();
     display.setTextSize(3);
     display.setTextColor(WHITE);
     display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
@@ -100,20 +104,27 @@ void loop() {
   if (y == KEY_LONG_PRESS) {
     if (space == SPACE_1) space = SPACE_2;
     else if (space == SPACE_2) space = SPACE_3;
-    else if (space == SPACE_3) space = SPACE_1;
-    Serial.print("long");
+    else if (space == SPACE_3) {
+      space = SPACE_1;
+      EEPROM.put(eeAddress, nick1);
+      EEPROM.put(eeAddress + 1, nick2);
+      EEPROM.put(eeAddress + 2, nick3);
+      Serial.println((char)EEPROM.get(eeAddress, nick1));
+      Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
+      Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
+    }
   }
 
   if (b == 0) {
     lineAll();
     display.drawLine(0, LINES_HEIGHT - 3, 128, LINES_HEIGHT - 3, BLACK);
-    Serial.println("b=0");
+    //Serial.println("b=0");
     display.display();
   }
   else if (b == 1) {
     lineAll();
     display.drawLine(space, LINES_HEIGHT - 3, space + 30, LINES_HEIGHT - 3, WHITE);
-    Serial.println("b=1");
+    //Serial.println("b=1");
     display.display();
   }
 

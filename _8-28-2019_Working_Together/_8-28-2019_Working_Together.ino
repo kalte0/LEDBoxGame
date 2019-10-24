@@ -1,4 +1,4 @@
-mv// IDEAS TO ADD IN FUTURE:
+// IDEAS TO ADD IN FUTURE:
 /*  Add secret screen at the beginning
     NAE = Nickname code for Ae
 */
@@ -7,6 +7,7 @@ mv// IDEAS TO ADD IN FUTURE:
 #include <Adafruit_NeoPixel.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <EEPROM.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <math.h>
@@ -86,7 +87,7 @@ int hurdle = 0; // used to store if the last obstacle is lit up. This will be us
 int buff; // this will be used to store if the button has been pushed and then released before allowing another jump.
 int shift; // this will store which stage in the array to use next, incremented each time runObst is activated.
 int score = 0;
-int highScore = 0;
+char highScore = 0;
 int scoreWait; // this helps the program only count a point once. Once a point is won, this becomes 1. Then, once you're no longer jumping it returns to 0. Points are only counted when it is at 0, which is only once.
 int idle; // helps program w/ timing millis for idle Animations
 int maxShift; // sets the highest shift value possible, for use in runObst function
@@ -117,6 +118,7 @@ int obst3[16] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x8A, 0x45, 0xA2, 0x51, 0x2
 int levelStages[9] = {1, 2, 3, 3, 2, 1, 2, 1, 3};
 int blue;
 int red;
+int eeAddress = 0; // this is used to save all values to EEPROM, a small hard drive located on the chip.
 //                    1        2        3
 
 
@@ -137,6 +139,12 @@ void setup() {
 
   display.clearDisplay();
   display.display();
+
+  Serial.println((char)EEPROM.get(eeAddress, nick1));
+  Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
+  Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
+  Serial.println((char)EEPROM.get(eeAddress + 3, highScore));
+
 
   tone(PIEZO, 0, 1000);
   state = OFF;
@@ -299,6 +307,12 @@ void loop() {
         display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
         display.print((char)nick3);
         display.display();
+        EEPROM.put(eeAddress, nick1);
+        EEPROM.put(eeAddress + 1, nick2);
+        EEPROM.put(eeAddress + 2, nick3);
+        Serial.println((char)EEPROM.get(eeAddress, nick1));
+        Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
+        Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
       }
       else if (y == KEY_SHORT_PRESS && x == 1) {
         if (space == SPACE_1) addNick(fakeNick1);
@@ -324,7 +338,6 @@ void loop() {
           space = SPACE_1;
           x = 0;
           idleAnimText();
-          saveAllNick(); 
           digitalWrite(ANIM1, HIGH);
           state = OFF;
         }
@@ -367,7 +380,7 @@ int runObst() {
   double a = pow(0.80, level);
   delayVal = 850 * a;
 
-  Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
+  // Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
 
   shift++;
   if (shift == maxShift) { // since the array is only 17 values long, (#0-10), once shift equals 11, set it back to 0.
@@ -529,7 +542,7 @@ int failAnim() {
 
   if (score > highScore) {
     highScore = score;
-
+    EEPROM.put(eeAddress + 3, highScore);
     for (int x = 0 ; x < 5; x++) {
       display.clearDisplay();
       display.setTextSize(2);
@@ -584,21 +597,6 @@ int addNick(int nick) {
   }
 }
 
-int saveAllNick() {
-  val = nick1;
-  EEPROM.write(0, val);
-  val = nick2;
-  EEPROM.write(1, val);
-  val = nick3;
-  EEPROM.write(2, val);
-  val = fakeNick1;
-  EEPROM.write(3, val);
-  val = fakeNick2;
-  EEPROM.write(4, val);
-  val = fakeNick3
-  EEPROM.write(5, val);
-
-}
 
 int lineAll() {
   line_on(SPACE_1);
