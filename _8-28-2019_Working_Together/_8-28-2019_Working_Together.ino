@@ -1,5 +1,5 @@
-// IDEAS TO ADD IN FUTURE:
-/*  - change obst color with level change
+mv// IDEAS TO ADD IN FUTURE:
+/*  Add secret screen at the beginning
     NAE = Nickname code for Ae
 */
 
@@ -19,6 +19,7 @@
 #define clr_bit(var, pin)   var &= ~(1<<(unsigned char)pin) // set the desired pin to 0
 #define test_bit(var, pin)    ((var & (1<<(unsigned char) pin)) >> pin) // 
 #define toggle_bit(var, pin)  var ^= 1<<(unsigned char) pin // name implies it pretty clearly 
+
 
 #define NUMPIXELS 8 // Change when we get a longer strip. 
 
@@ -89,6 +90,7 @@ int highScore = 0;
 int scoreWait; // this helps the program only count a point once. Once a point is won, this becomes 1. Then, once you're no longer jumping it returns to 0. Points are only counted when it is at 0, which is only once.
 int idle; // helps program w/ timing millis for idle Animations
 int maxShift; // sets the highest shift value possible, for use in runObst function
+int x;
 int y;
 int z;
 int track = 0; // chooses which track to run.
@@ -99,7 +101,11 @@ int space = SPACE_1;
 int nick1 = 0x41;
 int nick2 = 0x41; //save the three letters of the top score nickname
 int nick3 = 0x41;
+int fakeNick1 = 0x40;
+int fakeNick2 = 0x41;
+int fakeNick3 = 0x41;
 int b; // used in nickname stage
+int val; // used to store Nicknames
 
 // guide to making obstacles: the beginning of the array will be activated first,
 // in binary: 00001, or 1, will display as closest to the base of the strip, or to the player.
@@ -109,7 +115,7 @@ int obst1[15] = {0x80, 0x40, 0x20, 0x10, 0x88, 0x44, 0x22, 0x91, 0x48, 0x24, 0x1
 int obst2[15] = {0x80, 0x40, 0x20, 0x90, 0x48, 0xA4, 0x52, 0xA9, 0x54, 0x2A, 0x15, 0x0A, 0x05, 0x02, 0x01}; //10101001
 int obst3[16] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x8A, 0x45, 0xA2, 0x51, 0x28, 0x14, 0x0A, 0x05, 0x02, 0x01};//101000101
 int levelStages[9] = {1, 2, 3, 3, 2, 1, 2, 1, 3};
-int blue; 
+int blue;
 int red;
 //                    1        2        3
 
@@ -186,8 +192,18 @@ void loop() {
 
   switch (state) {
     case OFF: //-------------------------------------------------------------------------- OFF
-
-      if (digitalRead(BUTTON) == HIGH) {
+      y = key_read(BUTTON);
+      delay(5);
+      if (y == KEY_LONG_PRESS) {
+        idleAnim();
+        display.clearDisplay();
+        fakeNick1 = 0x40;
+        fakeNick2 = 0x41;
+        fakeNick3 = 0x41;
+        x = 1;
+        state = NICKNAME;
+      }
+      if (y == KEY_SHORT_PRESS) {
         delay(50);
         for (int i = 0; i < 8; i++) {
           pixels.setPixelColor(i, pixels.Color(0, 0, 0)); // LED strip off
@@ -268,7 +284,7 @@ void loop() {
         }
         timeLast = timeThis;
       }
-      if (y == KEY_SHORT_PRESS) {
+      if (y == KEY_SHORT_PRESS && x == 0) {
         if (space == SPACE_1) addNick(nick1);
         if (space == SPACE_2) addNick(nick2);
         if (space == SPACE_3) addNick(nick3);
@@ -284,16 +300,35 @@ void loop() {
         display.print((char)nick3);
         display.display();
       }
+      else if (y == KEY_SHORT_PRESS && x == 1) {
+        if (space == SPACE_1) addNick(fakeNick1);
+        if (space == SPACE_2) addNick(fakeNick2);
+        if (space == SPACE_3) addNick(fakeNick3);
+        for (int i = 0; i < 30; i++) display.drawLine(space + i, LETTER_HEIGHT, space + i, LETTER_HEIGHT + 20, BLACK);
+        display.display();
+        display.setTextSize(3);
+        display.setTextColor(WHITE);
+        display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
+        display.print((char)fakeNick1);
+        display.setCursor(SPACE_2 + 8, LETTER_HEIGHT);
+        display.print((char)fakeNick2);
+        display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
+        display.print((char)fakeNick3);
+        display.display();
+      }
+
       if (y == KEY_LONG_PRESS) {
         if (space == SPACE_1) space = SPACE_2;
         else if (space == SPACE_2) space = SPACE_3;
         else if (space == SPACE_3) {
           space = SPACE_1;
+          x = 0;
           idleAnimText();
+          saveAllNick(); 
           digitalWrite(ANIM1, HIGH);
           state = OFF;
         }
-        Serial.print("long");
+        if (fakeNick1 == 0x42 && fakeNick2 == 0x42 && fakeNick3 == 0x42) Serial.print("woah");
       }
 
       break;
@@ -347,7 +382,7 @@ int runObst() {
   }
 
   red = map(level, 0, 10, 0, 255);
-  blue = 255 - red; 
+  blue = 255 - red;
 
   // Serial.print(binary, HEX); Serial.print('\t'); Serial.println(shift); // print info
   for ( int x = 0; x < 8; x++ ) { // this for loops writes each LED in the strip based on var binary.
@@ -428,9 +463,9 @@ int idleAnimText() {
   display.setTextColor(WHITE);
   display.setCursor(10, 18);
   display.print((char)nick1);
-  display.print((char)nick2); 
-  display.print((char)nick3); 
-  display.print(":"); 
+  display.print((char)nick2);
+  display.print((char)nick3);
+  display.print(":");
   display.println(highScore);
   display.display();
   display.startscrollleft(0x00, 0x0F);
@@ -537,9 +572,31 @@ int addNick(int nick) {
   nick++;
   if (nick == 0x5B) nick = 0x41;
   // Serial.write(nick);
-  if (space == SPACE_1) nick1 = nick;
-  if (space == SPACE_2) nick2 = nick;
-  if (space == SPACE_3) nick3 = nick;
+  if (x == 0) {
+    if (space == SPACE_1) nick1 = nick;
+    if (space == SPACE_2) nick2 = nick;
+    if (space == SPACE_3) nick3 = nick;
+  }
+  if (x == 1) {
+    if (space == SPACE_1) fakeNick1 = nick;
+    if (space == SPACE_2) fakeNick2 = nick;
+    if (space == SPACE_3) fakeNick3 = nick;
+  }
+}
+
+int saveAllNick() {
+  val = nick1;
+  EEPROM.write(0, val);
+  val = nick2;
+  EEPROM.write(1, val);
+  val = nick3;
+  EEPROM.write(2, val);
+  val = fakeNick1;
+  EEPROM.write(3, val);
+  val = fakeNick2;
+  EEPROM.write(4, val);
+  val = fakeNick3
+  EEPROM.write(5, val);
 
 }
 
