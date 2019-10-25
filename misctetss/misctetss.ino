@@ -25,6 +25,11 @@
 #define OLED_DC    11
 #define OLED_CS    12
 #define OLED_RESET 13
+
+#define NICK1_ADDR eeAddress + sizeof(char)
+#define NICK2_ADDR eeAddress + (sizeof(char) * 2)
+#define NICK3_ADDR eeAddress + (sizeof(char) * 3)
+
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
                          OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
@@ -54,6 +59,7 @@ int nick2 = 0x41;
 int nick3 = 0x41;
 int whichNick = 1;
 int eeAddress = 0;
+char highScore = 0;
 
 
 void setup() {
@@ -66,9 +72,9 @@ void setup() {
   line_on(SPACE_2);
   line_on(SPACE_3);
   display.display();
-  Serial.println((char)EEPROM.get(eeAddress, nick1));
-  Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
-  Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
+  Serial.println((char)EEPROM.get(NICK1_ADDR, nick1));
+  Serial.println((char)EEPROM.get(NICK2_ADDR, nick2));
+  Serial.println((char)EEPROM.get(NICK3_ADDR, nick3));
   nick1 = 0x40;
   nick2 = 0x41;
   nick3 = 0x41;
@@ -82,6 +88,7 @@ void loop() {
   if (timeThis - timeLast > 600) {
     if (b == 1) b = 0;
     else if (b == 0) b = 1; // there's gotta be a better way to do this toggle.
+    highScore++;
     timeLast = timeThis;
   }
 
@@ -106,12 +113,14 @@ void loop() {
     else if (space == SPACE_2) space = SPACE_3;
     else if (space == SPACE_3) {
       space = SPACE_1;
-      EEPROM.put(eeAddress, nick1);
-      EEPROM.put(eeAddress + 1, nick2);
-      EEPROM.put(eeAddress + 2, nick3);
-      Serial.println((char)EEPROM.get(eeAddress, nick1));
-      Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
-      Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
+      EEPROM.put(NICK1_ADDR, nick1);
+      EEPROM.put(NICK2_ADDR, nick2);
+      EEPROM.put(NICK3_ADDR, nick3);
+      Serial.println((char)EEPROM.get(NICK1_ADDR, nick1));
+      Serial.println((char)EEPROM.get(NICK2_ADDR, nick2));
+      Serial.println((char)EEPROM.get(NICK3_ADDR, nick3));
+
+
     }
   }
 

@@ -143,7 +143,7 @@ void setup() {
   Serial.println((char)EEPROM.get(eeAddress, nick1));
   Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
   Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
-  Serial.println((char)EEPROM.get(eeAddress + 3, highScore));
+  Serial.println((char)EEPROM.get(eeAddress + 4, highScore));
 
 
   tone(PIEZO, 0, 1000);
@@ -307,12 +307,6 @@ void loop() {
         display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
         display.print((char)nick3);
         display.display();
-        EEPROM.put(eeAddress, nick1);
-        EEPROM.put(eeAddress + 1, nick2);
-        EEPROM.put(eeAddress + 2, nick3);
-        Serial.println((char)EEPROM.get(eeAddress, nick1));
-        Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
-        Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
       }
       else if (y == KEY_SHORT_PRESS && x == 1) {
         if (space == SPACE_1) addNick(fakeNick1);
@@ -339,6 +333,12 @@ void loop() {
           x = 0;
           idleAnimText();
           digitalWrite(ANIM1, HIGH);
+          EEPROM.put(eeAddress, nick1);
+          EEPROM.put(eeAddress + 1, nick2);
+          EEPROM.put(eeAddress + 2, nick3);
+          Serial.println((char)EEPROM.get(eeAddress, nick1));
+          Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
+          Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
           state = OFF;
         }
         if (fakeNick1 == 0x42 && fakeNick2 == 0x42 && fakeNick3 == 0x42) Serial.print("woah");
@@ -479,7 +479,8 @@ int idleAnimText() {
   display.print((char)nick2);
   display.print((char)nick3);
   display.print(":");
-  display.println(highScore);
+  display.println((char)highScore);
+  Serial.println(highScore);
   display.display();
   display.startscrollleft(0x00, 0x0F);
 }
@@ -542,7 +543,8 @@ int failAnim() {
 
   if (score > highScore) {
     highScore = score;
-    EEPROM.put(eeAddress + 3, highScore);
+    EEPROM.put(eeAddress + 4, highScore);
+    Serial.println((char)EEPROM.get(eeAddress + 4, highScore));
     for (int x = 0 ; x < 5; x++) {
       display.clearDisplay();
       display.setTextSize(2);
