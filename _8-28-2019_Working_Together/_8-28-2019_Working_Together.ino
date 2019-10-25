@@ -75,7 +75,11 @@ unsigned long key_read(unsigned char pin)  {
 #define LINES_HEIGHT 30
 #define LETTER_HEIGHT 5
 
-
+//----------------------------------EEPROM Addresses-----------------
+#define NICK1_ADDR sizeof(char)
+#define NICK2_ADDR (sizeof(char) * 2)
+#define NICK3_ADDR (sizeof(char) * 3)
+#define SCORE_ADDR (sizeof(char) * 5)
 
 long timeThis, timeLast, timeLast2; // Millis
 
@@ -87,7 +91,7 @@ int hurdle = 0; // used to store if the last obstacle is lit up. This will be us
 int buff; // this will be used to store if the button has been pushed and then released before allowing another jump.
 int shift; // this will store which stage in the array to use next, incremented each time runObst is activated.
 int score = 0;
-char highScore = 0;
+int highScore;
 int scoreWait; // this helps the program only count a point once. Once a point is won, this becomes 1. Then, once you're no longer jumping it returns to 0. Points are only counted when it is at 0, which is only once.
 int idle; // helps program w/ timing millis for idle Animations
 int maxShift; // sets the highest shift value possible, for use in runObst function
@@ -118,7 +122,6 @@ int obst3[16] = {0x80, 0x40, 0xA0, 0x50, 0x28, 0x14, 0x8A, 0x45, 0xA2, 0x51, 0x2
 int levelStages[9] = {1, 2, 3, 3, 2, 1, 2, 1, 3};
 int blue;
 int red;
-int eeAddress = 0; // this is used to save all values to EEPROM, a small hard drive located on the chip.
 //                    1        2        3
 
 
@@ -139,12 +142,17 @@ void setup() {
 
   display.clearDisplay();
   display.display();
-
-  Serial.println((char)EEPROM.get(eeAddress, nick1));
-  Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
-  Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
-  Serial.println((char)EEPROM.get(eeAddress + 4, highScore));
-
+  /*Serial.println((char)EEPROM.get(NICK1_ADDR, nick1));
+    Serial.println((char)EEPROM.get(NICK2_ADDR, nick2));
+    Serial.println((char)EEPROM.get(NICK3_ADDR, nick3));*/
+  Serial.println(highScore);
+  Serial.println(EEPROM.get(SCORE_ADDR, highScore));
+  Serial.println(highScore);
+  highScore = EEPROM.get(SCORE_ADDR, highScore);
+  Serial.println(highScore);
+  nick1 = EEPROM.get(NICK1_ADDR, nick1);
+  nick2 = EEPROM.get(NICK2_ADDR, nick2);
+  nick3 = EEPROM.get(NICK3_ADDR, nick3);
 
   tone(PIEZO, 0, 1000);
   state = OFF;
@@ -220,6 +228,7 @@ void loop() {
         // Serial.println("To RUN");
         shift = 0;
         buff = 0;
+        hurdle = 0; 
         startAnim();
         timeLast = timeThis;
         timeLast2 = timeThis;
@@ -333,12 +342,12 @@ void loop() {
           x = 0;
           idleAnimText();
           digitalWrite(ANIM1, HIGH);
-          EEPROM.put(eeAddress, nick1);
-          EEPROM.put(eeAddress + 1, nick2);
-          EEPROM.put(eeAddress + 2, nick3);
-          Serial.println((char)EEPROM.get(eeAddress, nick1));
-          Serial.println((char)EEPROM.get(eeAddress + 1, nick2));
-          Serial.println((char)EEPROM.get(eeAddress + 2, nick3));
+          EEPROM.put(NICK1_ADDR, nick1);
+          EEPROM.put(NICK2_ADDR, nick2);
+          EEPROM.put(NICK3_ADDR, nick3);
+          Serial.println((char)EEPROM.get(NICK1_ADDR, nick1));
+          Serial.println((char)EEPROM.get(NICK2_ADDR, nick2));
+          Serial.println((char)EEPROM.get(NICK3_ADDR, nick3));
           state = OFF;
         }
         if (fakeNick1 == 0x42 && fakeNick2 == 0x42 && fakeNick3 == 0x42) Serial.print("woah");
@@ -479,8 +488,7 @@ int idleAnimText() {
   display.print((char)nick2);
   display.print((char)nick3);
   display.print(":");
-  display.println((char)highScore);
-  Serial.println(highScore);
+  display.println(EEPROM.get(SCORE_ADDR, highScore));
   display.display();
   display.startscrollleft(0x00, 0x0F);
 }
@@ -543,8 +551,8 @@ int failAnim() {
 
   if (score > highScore) {
     highScore = score;
-    EEPROM.put(eeAddress + 4, highScore);
-    Serial.println((char)EEPROM.get(eeAddress + 4, highScore));
+    EEPROM.put(SCORE_ADDR, highScore);
+    Serial.println(EEPROM.get(SCORE_ADDR, highScore));
     for (int x = 0 ; x < 5; x++) {
       display.clearDisplay();
       display.setTextSize(2);

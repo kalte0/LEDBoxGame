@@ -29,6 +29,7 @@
 #define NICK1_ADDR eeAddress + sizeof(char)
 #define NICK2_ADDR eeAddress + (sizeof(char) * 2)
 #define NICK3_ADDR eeAddress + (sizeof(char) * 3)
+#define SCORE_ADDR eeAddress + (sizeof(char) * 4)
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
                          OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
@@ -59,7 +60,7 @@ int nick2 = 0x41;
 int nick3 = 0x41;
 int whichNick = 1;
 int eeAddress = 0;
-char highScore = 0;
+int highScore = 0;
 
 
 void setup() {
@@ -75,9 +76,7 @@ void setup() {
   Serial.println((char)EEPROM.get(NICK1_ADDR, nick1));
   Serial.println((char)EEPROM.get(NICK2_ADDR, nick2));
   Serial.println((char)EEPROM.get(NICK3_ADDR, nick3));
-  nick1 = 0x40;
-  nick2 = 0x41;
-  nick3 = 0x41;
+  Serial.println(EEPROM.get(SCORE_ADDR, highScore)); 
 }
 
 
@@ -88,7 +87,6 @@ void loop() {
   if (timeThis - timeLast > 600) {
     if (b == 1) b = 0;
     else if (b == 0) b = 1; // there's gotta be a better way to do this toggle.
-    highScore++;
     timeLast = timeThis;
   }
 
@@ -113,14 +111,15 @@ void loop() {
     else if (space == SPACE_2) space = SPACE_3;
     else if (space == SPACE_3) {
       space = SPACE_1;
+      highScore = 10; 
       EEPROM.put(NICK1_ADDR, nick1);
       EEPROM.put(NICK2_ADDR, nick2);
       EEPROM.put(NICK3_ADDR, nick3);
+      EEPROM.put(SCORE_ADDR, highScore); 
       Serial.println((char)EEPROM.get(NICK1_ADDR, nick1));
       Serial.println((char)EEPROM.get(NICK2_ADDR, nick2));
       Serial.println((char)EEPROM.get(NICK3_ADDR, nick3));
-
-
+      Serial.println(EEPROM.get(SCORE_ADDR, highScore));
     }
   }
 
