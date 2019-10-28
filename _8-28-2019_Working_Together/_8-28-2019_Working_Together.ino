@@ -1,6 +1,6 @@
 // IDEAS TO ADD IN FUTURE:
 /*
-    NAE = Nickname code for Ae
+    
 */
 
 
@@ -103,7 +103,7 @@ int delayVal = 500; // will control how fast the game runs.
 int level = 1; // level is a series of 3 tracks, and have different speeds.
 int downWait; // turns to one when there is an obtacle under the jump, tells the player to immediatley go back down when they have gotten over that obstacle.
 int space = SPACE_1;
-int nick1 = 0x41;
+int nick1 = 0x41; 
 int nick2 = 0x41; //save the three letters of the top score nickname
 int nick3 = 0x41;
 int fakeNick1 = 0x40;
