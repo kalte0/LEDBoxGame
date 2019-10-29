@@ -1,6 +1,6 @@
 // IDEAS TO ADD IN FUTURE:
 /*
-    
+
 */
 
 
@@ -101,9 +101,9 @@ int z;
 int track = 0; // chooses which track to run.
 int delayVal = 500; // will control how fast the game runs.
 int level = 1; // level is a series of 3 tracks, and have different speeds.
-int downWait; // turns to one when there is an obtacle under the jump, tells the player to immediatley go back down when they have gotten over that obstacle.
+int downWait; // turns to one when there is an obtacle under the jump, tells the player to immediately go back down when they have gotten over that obstacle.
 int space = SPACE_1;
-int nick1 = 0x41; 
+int nick1 = 0x41;
 int nick2 = 0x41; //save the three letters of the top score nickname
 int nick3 = 0x41;
 int fakeNick1 = 0x40;
@@ -156,6 +156,7 @@ void setup() {
   tone(PIEZO, 0, 1000);
   state = OFF;
   digitalWrite(ANIM1, HIGH);
+  digitalWrite(ANIM2, LOW);
   shift = 0;
 }
 
@@ -172,19 +173,15 @@ void loop() {
       pixels.setPixelColor(i, pixels.Color(0, 0, 0));
     }
     pixels.show();
-    failAnim();
     hurdle = 0;
-    idleAnimText();
-    score = 0;
     delay(200);
     digitalWrite(ANIM1, HIGH);
     shift = 0;
     Serial.println("Fail");
-    nick1 = 0x40;
-    nick2 = 0x41;
-    nick3 = 0x41;
     idleAnim();
-    display.clearDisplay();
+    failAnim();
+    score = 0;
+  //  display.clearDisplay();
   }
 
   if (timeThis - timeLast2 > delayVal) { // how long the obstacles will run
@@ -257,7 +254,17 @@ void loop() {
         digitalWrite(ANIM1, !(digitalRead(ANIM1))); // toggle the two frames of animation.
         digitalWrite(ANIM2, !(digitalRead(ANIM2)));
       }
-      /*   if (timeThis - timeLast2 > delayVal - (delayVal * 0.2)) {
+      /* if (y == KEY_LONG_PRESS) {
+         digitalWrite(ANIM1, LOW);
+         digitalWrite(ANIM2, LOW);
+         digitalWrite(ANIMJUMP, LOW);
+         for (int i = 0; i < 8; i++) {
+           pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+         }
+         pixels.show();
+         state = OFF;
+        }*/
+      /*  if (timeThis - timeLast2 > delayVal - (delayVal * 0.2)) {
            runObst();
            timeLast2 = timeThis;
          }*/
@@ -277,14 +284,14 @@ void loop() {
         buff = 1;
         timeLast = timeThis;
         // Serial.println("To RUN");
-        state = RUN;
         downWait = 0;
+        state = RUN;
       }
       break;
 
     case NICKNAME://----------------------------------------------------------------------- NICKNAME
-
       y = key_read(BUTTON);
+      delay(1); 
       if (timeThis - timeLast > 600) {
         if (b == 0) {
           lineAll();
@@ -365,281 +372,291 @@ void loop() {
             Serial.println("awwh no cheats today :(((");
             fast = 0;
           }
-            EEPROM.put(NICK1_ADDR, nick1);
-            EEPROM.put(NICK2_ADDR, nick2);
-            EEPROM.put(NICK3_ADDR, nick3);
-            Serial.println((char)EEPROM.get(NICK1_ADDR, nick1));
-            Serial.println((char)EEPROM.get(NICK2_ADDR, nick2));
-            Serial.println((char)EEPROM.get(NICK3_ADDR, nick3));
-            state = OFF;
-          }
-        }
-        break;
-      }
-      timeThis = timeLast;
-  }
-
-
-  int runObst() {
-
-    if (state == OFF or state == NICKNAME) {
-      track = 0;
-      binary = obstIdle[shift];
-      maxShift = 8;
-      level = 1;
-    }
-
-    else if (state != OFF) {
-      if (track == 1) {
-        binary = obst1[shift];
-        maxShift = 15;
-      }
-      if (track == 2) {
-        if (level == 1) {
-          level = 2;
-        }
-        binary = obst2[shift];
-        maxShift = 15;
-      }
-      if (track == 3) {
-        binary = obst3[shift];
-        maxShift = 16;
-      }
-    }
-
-    double a = pow(0.80, level);
-    delayVal = 850 * a;
-    if (fast != 0) delayVal = 400 * a;
-
-    // Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
-
-    shift++;
-    if (shift == maxShift) { // since the array is only 17 values long, (#0-10), once shift equals 11, set it back to 0.
-      shift = 0;
-      track++;
-      if (track == 4) {
-        track = 1;
-        level++;
-        //Later, add an animation for increased level.
-      }
-      // Serial.println(track);
-    }
-
-    red = map(level, 0, 10, 0, 255);
-    blue = 255 - red;
-
-    // Serial.print(binary, HEX); Serial.print('\t'); Serial.println(shift); // print info
-    for ( int x = 0; x < 8; x++ ) { // this for loops writes each LED in the strip based on var binary.
-
-      if (test_bit(binary, x) == 1) {
-        pixels.setPixelColor(x, pixels.Color(red, 0, blue));
-        if (x == 0) {
-          hurdle = 1;
+          EEPROM.put(NICK1_ADDR, nick1);
+          EEPROM.put(NICK2_ADDR, nick2);
+          EEPROM.put(NICK3_ADDR, nick3);
+          Serial.println((char)EEPROM.get(NICK1_ADDR, nick1));
+          Serial.println((char)EEPROM.get(NICK2_ADDR, nick2));
+          Serial.println((char)EEPROM.get(NICK3_ADDR, nick3));
+          state = OFF;
         }
       }
-      else {
-        pixels.setPixelColor(x, pixels.Color(0, 0, 0 ));
-        if (x == 0) {
-          hurdle = 0;
-        }
+      break;
+  }
+  timeThis = timeLast;
+}
+
+
+int runObst() {
+
+  if (state == OFF or state == NICKNAME) {
+    track = 0;
+    binary = obstIdle[shift];
+    maxShift = 8;
+    level = 1;
+  }
+
+  else if (state != OFF) {
+    if (track == 1) {
+      binary = obst1[shift];
+      maxShift = 15;
+    }
+    if (track == 2) {
+      if (level == 1) {
+        level = 2;
       }
-      pixels.show();
+      binary = obst2[shift];
+      maxShift = 15;
+    }
+    if (track == 3) {
+      binary = obst3[shift];
+      maxShift = 16;
     }
   }
 
+  double a = pow(0.80, level);
+  delayVal = 850 * a;
+  if (fast != 0) delayVal = 400 * a;
 
-  int idleAnim() {
-    if (timeThis - timeLast > 8000) { // the millis here will be how long the TEXT will last
-      idleAnimCircle();
-      idle = 0;
-      timeLast = timeThis;
-    }
-    if (timeThis - timeLast > 1000 && idle == 0) { // the millis time here is how long the CIRCLE will last
-      idleAnimText();
-      idle = 1;
-      timeLast = timeThis;
-    }
+  // Serial.print("Level:"); Serial.print(level); Serial.print('\t'); Serial.println(delayVal);
 
-    if (timeThis - timeLast2 > 500) {
-      runObst();
-      if (hurdle == 1) {
-        digitalWrite(ANIM1, LOW);
-        digitalWrite(ANIM2, LOW);
-        digitalWrite(ANIMJUMP, HIGH);
-        y = 1;
-      }
-      else if (y == 1) {
-        digitalWrite(ANIM1, HIGH);
-        digitalWrite(ANIM2, LOW);
-        digitalWrite(ANIMJUMP, LOW);
-        y = 0;
-      }
-      if (hurdle == 0 && y == 0) {
-        digitalWrite(ANIM1, !(digitalRead(ANIM1))); // toggle the two frames of animation.
-        digitalWrite(ANIM2, !(digitalRead(ANIM2)));
-      }
-      timeLast2 = timeThis;
+  shift++;
+  if (shift == maxShift) { // since the array is only 17 values long, (#0-10), once shift equals 11, set it back to 0.
+    shift = 0;
+    track++;
+    if (track == 4) {
+      track = 1;
+      level++;
+      //Later, add an animation for increased level.
     }
-
+    // Serial.println(track);
   }
 
-  int idleAnimCircle() {
-    display.clearDisplay();
-    for (int16_t i = 0; i < max(display.width(), display.height()) / 2; i += 2) {
-      display.drawCircle(display.width() / 2, display.height() / 2, i, WHITE);
-      display.display();
-      delay(2);
-    }
-    display.drawPixel(display.width() / 2, display.height() / 2, BLACK); //           Circles Animation
-    for (int16_t i = 0; i < max(display.width(), display.height()) / 2; i += 2) {
-      display.drawCircle(display.width() / 2, display.height() / 2, i, BLACK);
-      display.display();
-      delay(2);
-    }
-  }
+  red = map(level, 0, 10, 0, 255);
+  blue = 255 - red;
 
-  int idleAnimText() {
-    display.clearDisplay();
-    display.setTextSize(2);
-    display.setTextColor(BLACK, WHITE); //                  Text Animation
-    display.setCursor(0, 0);
-    display.print("Froggy Run");
-    display.setTextColor(WHITE);
-    display.setCursor(10, 18);
-    display.print((char)nick1);
-    display.print((char)nick2);
-    display.print((char)nick3);
-    display.print(":");
-    display.println(EEPROM.get(SCORE_ADDR, highScore));
-    display.display();
-    display.startscrollleft(0x00, 0x0F);
-  }
+  // Serial.print(binary, HEX); Serial.print('\t'); Serial.println(shift); // print info
+  for ( int x = 0; x < 8; x++ ) { // this for loops writes each LED in the strip based on var binary.
 
-  int startAnim() {
-    for (int x = 0; x < 5; x++) {
-      display.clearDisplay();
-      display.setTextSize(2);
-      display.setTextColor(BLACK, WHITE); //                  Text Animation for startup
-      display.setCursor(0, 0);
-      display.print("START GAME");
-      display.display();
-      delay(100);
-      display.clearDisplay();
-      display.setTextColor(WHITE, BLACK);
-      display.setCursor(0, 0);
-      display.print("START GAME");
-      display.display();
-      delay(100);
-    }
-    tone(PIEZO, 261.63);
-    delay(125);
-    tone(PIEZO, 329.63);
-    delay(125);
-    tone(PIEZO, 392.00);
-    delay(200);
-    noTone(PIEZO);
-    display.clearDisplay();
-    display.setTextColor(WHITE, BLACK);
-    display.setCursor(0, 10);
-    display.print("GOOD LUCK!");
-    display.display();
-    digitalWrite(ANIM1, HIGH);
-    digitalWrite(ANIM2, LOW);
-    digitalWrite(ANIMJUMP, LOW);
-  }
-
-  int failAnim() {
-
-    display.clearDisplay();
-    display.setTextSize(2);
-    display.setTextColor(WHITE); //                  Text Animation for failure
-    display.setCursor(10, 8);
-    display.print("Game Over");
-    display.display();
-    tone(PIEZO, 329.63); // E4
-    delay(100);
-    tone(PIEZO, 261.63); // C4
-    delay(100);
-    tone(PIEZO, 220.00); // A3
-    delay(100);
-    noTone(PIEZO);
-    delay(1200);
-    display.clearDisplay();
-    display.setTextSize(2);
-    display.setCursor(20, 8);
-    display.print("Score:"); display.println(score);
-    display.display();
-    delay(2000);
-
-    if (score > highScore) {
-      highScore = score;
-      EEPROM.put(SCORE_ADDR, highScore);
-      Serial.println(EEPROM.get(SCORE_ADDR, highScore));
-      for (int x = 0 ; x < 5; x++) {
-        display.clearDisplay();
-        display.setTextSize(2);
-        display.setCursor(0, 8);
-        display.setTextColor(WHITE);
-        display.print("HIGHSCORE");
-        display.display();
-        tone(PIEZO, 261.63); // C4
-        delay(100);
-        display.clearDisplay();
-        display.setTextSize(2);
-        display.setCursor(0, 8);
-        display.setTextColor(BLACK, WHITE);
-        display.print("HIGHSCORE");
-        display.display();
-        tone(PIEZO, 392.00); // G4
-        delay(100);
+    if (test_bit(binary, x) == 1) {
+      pixels.setPixelColor(x, pixels.Color(red, 0, blue));
+      if (x == 0) {
+        hurdle = 1;
       }
-      noTone(PIEZO);
-      state = NICKNAME;
-
     }
     else {
-      state = OFF;
+      pixels.setPixelColor(x, pixels.Color(0, 0, 0 ));
+      if (x == 0) {
+        hurdle = 0;
+      }
     }
+    pixels.show();
+  }
+}
+
+
+int idleAnim() {
+  if (timeThis - timeLast > 8000) { // the millis here will be how long the TEXT will last
+    idleAnimCircle();
+    idle = 0;
+    timeLast = timeThis;
+  }
+  if (timeThis - timeLast > 1000 && idle == 0) { // the millis time here is how long the CIRCLE will last
+    idleAnimText();
+    idle = 1;
+    timeLast = timeThis;
   }
 
-  int pointAnim() {
+  if (timeThis - timeLast2 > 500) {
+    runObst();
+    if (hurdle == 1) {
+      digitalWrite(ANIM1, LOW);
+      digitalWrite(ANIM2, LOW);
+      digitalWrite(ANIMJUMP, HIGH);
+      y = 1;
+    }
+    else if (y == 1) {
+      digitalWrite(ANIM1, HIGH);
+      digitalWrite(ANIM2, LOW);
+      digitalWrite(ANIMJUMP, LOW);
+      y = 0;
+    }
+    if (hurdle == 0 && y == 0) {
+      digitalWrite(ANIM1, !(digitalRead(ANIM1))); // toggle the two frames of animation.
+      digitalWrite(ANIM2, !(digitalRead(ANIM2)));
+    }
+    timeLast2 = timeThis;
+  }
+
+}
+
+int idleAnimCircle() {
+  display.clearDisplay();
+  for (int16_t i = 0; i < max(display.width(), display.height()) / 2; i += 2) {
+    display.drawCircle(display.width() / 2, display.height() / 2, i, WHITE);
+    display.display();
+    delay(2);
+  }
+  display.drawPixel(display.width() / 2, display.height() / 2, BLACK); //           Circles Animation
+  for (int16_t i = 0; i < max(display.width(), display.height()) / 2; i += 2) {
+    display.drawCircle(display.width() / 2, display.height() / 2, i, BLACK);
+    display.display();
+    delay(2);
+  }
+}
+
+int idleAnimText() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(BLACK, WHITE); //                  Text Animation
+  display.setCursor(0, 0);
+  display.print("Froggy Run");
+  display.setTextColor(WHITE);
+  display.setCursor(10, 18);
+  display.print((char)nick1);
+  display.print((char)nick2);
+  display.print((char)nick3);
+  display.print(":");
+  display.println(EEPROM.get(SCORE_ADDR, highScore));
+  display.display();
+  display.startscrollleft(0x00, 0x0F);
+}
+
+int startAnim() {
+  for (int x = 0; x < 5; x++) {
     display.clearDisplay();
     display.setTextSize(2);
-    display.setTextColor(WHITE);
+    display.setTextColor(BLACK, WHITE); //                  Text Animation for startup
     display.setCursor(0, 0);
-    display.print("Level:"); display.print(level);
-    display.setCursor(0, 18);
-    display.print("Score:"); display.print(score);
+    display.print("START GAME");
     display.display();
+    delay(100);
+    display.clearDisplay();
+    display.setTextColor(WHITE, BLACK);
+    display.setCursor(0, 0);
+    display.print("START GAME");
+    display.display();
+    delay(100);
   }
+  tone(PIEZO, 261.63);
+  delay(125);
+  tone(PIEZO, 329.63);
+  delay(125);
+  tone(PIEZO, 392.00);
+  delay(200);
+  noTone(PIEZO);
+  display.clearDisplay();
+  display.setTextColor(WHITE, BLACK);
+  display.setCursor(0, 10);
+  display.print("GOOD LUCK!");
+  display.display();
+  digitalWrite(ANIM1, HIGH);
+  digitalWrite(ANIM2, LOW);
+  digitalWrite(ANIMJUMP, LOW);
+}
 
-  int addNick(int nick) {
-    nick++;
-    if (nick == 0x5B) nick = 0x41;
-    // Serial.write(nick);
-    if (x == 0) {
-      if (space == SPACE_1) nick1 = nick;
-      if (space == SPACE_2) nick2 = nick;
-      if (space == SPACE_3) nick3 = nick;
+int failAnim() {
+
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE); //                  Text Animation for failure
+  display.setCursor(10, 8);
+  display.print("Game Over");
+  display.display();
+  tone(PIEZO, 329.63); // E4
+  delay(100);
+  tone(PIEZO, 261.63); // C4
+  delay(100);
+  tone(PIEZO, 220.00); // A3
+  delay(100);
+  noTone(PIEZO);
+  delay(1200);
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setCursor(20, 8);
+  display.print("Score:"); display.println(score);
+  display.display();
+  delay(1000);
+
+  if (score > highScore) {
+    highScore = score;
+    EEPROM.put(SCORE_ADDR, highScore);
+    Serial.println(EEPROM.get(SCORE_ADDR, highScore));
+    for (int x = 0 ; x < 5; x++) {
+      display.clearDisplay();
+      display.setTextSize(2);
+      display.setCursor(0, 8);
+      display.setTextColor(WHITE);
+      display.print("HIGHSCORE");
+      display.display();
+      tone(PIEZO, 261.63); // C4
+      delay(100);
+      display.clearDisplay();
+      display.setTextSize(2);
+      display.setCursor(0, 8);
+      display.setTextColor(BLACK, WHITE);
+      display.print("HIGHSCORE");
+      display.display();
+      tone(PIEZO, 392.00); // G4
+      delay(100);
     }
-    if (x == 1) {
-      if (space == SPACE_1) fakeNick1 = nick;
-      if (space == SPACE_2) fakeNick2 = nick;
-      if (space == SPACE_3) fakeNick3 = nick;
-    }
+    noTone(PIEZO);
+    nick1 = 0x41;
+    nick2 = 0x41;
+    nick3 = 0x41;
+    display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
+    display.print((char)nick1);
+    display.setCursor(SPACE_2 + 8, LETTER_HEIGHT);
+    display.print((char)nick2);
+    display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
+    display.print((char)nick3);
+    state = NICKNAME;
+
   }
-
-
-  int lineAll() {
-    line_on(SPACE_1);
-    line_on(SPACE_2);
-    line_on(SPACE_3);
+  else {
+    idleAnimText();
+    state = OFF;
   }
+}
 
-  /*  idleAnimText();
-      digitalWrite(ANIM1, HIGH);
-      idle = 0;
-      shift = 0; */ // wherever the code moves to off, include these three so the animation will work correctly.
+int pointAnim() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 0);
+  display.print("Level:"); display.print(level);
+  display.setCursor(0, 18);
+  display.print("Score:"); display.print(score);
+  display.display();
+}
+
+int addNick(int nick) {
+  nick++;
+  if (nick == 0x5B) nick = 0x41;
+  // Serial.write(nick);
+  if (x == 0) {
+    if (space == SPACE_1) nick1 = nick;
+    if (space == SPACE_2) nick2 = nick;
+    if (space == SPACE_3) nick3 = nick;
+  }
+  if (x == 1) {
+    if (space == SPACE_1) fakeNick1 = nick;
+    if (space == SPACE_2) fakeNick2 = nick;
+    if (space == SPACE_3) fakeNick3 = nick;
+  }
+}
+
+
+int lineAll() {
+  line_on(SPACE_1);
+  line_on(SPACE_2);
+  line_on(SPACE_3);
+}
+
+/*  idleAnimText();
+    digitalWrite(ANIM1, HIGH);
+    idle = 0;
+    shift = 0; */ // wherever the code moves to off, include these three so the animation will work correctly.
 
 
 

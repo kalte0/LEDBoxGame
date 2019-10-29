@@ -147,7 +147,7 @@ void setup() {
   Serial.println(highScore);
   highScore = EEPROM.get(SCORE_ADDR, highScore);
   Serial.println(highScore);
-  for (x = 0 ; x < 3; x++) EEPROM.get(NICK_ADDR[x], nick[x]);
+  for (int i = 0 ; i < 3; i++) EEPROM.get(NICK_ADDR[i], nick[i]);
   tone(PIEZO, 0, 1000);
   state = OFF;
   digitalWrite(ANIM1, HIGH);
@@ -299,32 +299,32 @@ void loop() {
         display.display();
         display.setTextSize(3);
         display.setTextColor(WHITE);
-        /* display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
-          display.print((char)nick[1]);
+         display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
+          display.print((char)nick[0]);
           display.setCursor(SPACE_2 + 8, LETTER_HEIGHT);
-          display.print((char)nick[2]);
+          display.print((char)nick[1]);
           display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
-          display.print((char)nick[3]); */
-        for (int i = 0 ; i < 3; i++) {
+          display.print((char)nick[2]); 
+      /*  for (int i = 0 ; i < 3; i++) {
           display.setCursor(SPACE[i] + 8, LETTER_HEIGHT);
           display.print((char)nick[i]);
-        }
+        }*/
         display.display();
       }
       else if (y == KEY_SHORT_PRESS && x == 1) {
-        if (space == SPACE_1) addNick(fakeNick[1]);
-        if (space == SPACE_2) addNick(fakeNick[2]);
-        if (space == SPACE_3) addNick(fakeNick[3]);
+        if (space == SPACE_1) addNick(fakeNick[0]);
+        if (space == SPACE_2) addNick(fakeNick[1]);
+        if (space == SPACE_3) addNick(fakeNick[2]);
         for (int i = 0; i < 30; i++) display.drawLine(space + i, LETTER_HEIGHT, space + i, LETTER_HEIGHT + 20, BLACK);
         display.display();
         display.setTextSize(3);
         display.setTextColor(WHITE);
         display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
-        display.print((char)fakeNick[1]);
+        display.print((char)fakeNick[0]);
         display.setCursor(SPACE_2 + 8, LETTER_HEIGHT);
-        display.print((char)fakeNick[2]);
+        display.print((char)fakeNick[1]);
         display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
-        display.print((char)fakeNick[3]);
+        display.print((char)fakeNick[2]);
         display.display();
       }
 
@@ -336,31 +336,31 @@ void loop() {
           x = 0;
           idleAnimText();
           digitalWrite(ANIM1, HIGH);
-          if (fakeNick[1] == 0x52 && fakeNick[2] == 0x53 && fakeNick[3] == 0x54) {
-            Serial.println("wo :0");
+          if (fakeNick[0] == 0x52 && fakeNick[1] == 0x53 && fakeNick[2] == 0x54) {
+            Serial.println("wo :0 brutal");
+            nick[0] = 0x41;
             nick[1] = 0x41;
             nick[2] = 0x41;
-            nick[3] = 0x41;
             highScore = 0;
             EEPROM.put(SCORE_ADDR, highScore);
           }
-          if (nick[1] == 0x4E && nick[2] == 0x41 && nick[3] == 0x45) {
+          if (nick[0] == 0x4E && nick[1] == 0x41 && nick[2] == 0x45) {
             Serial.println("woah");
-            nick[1] = 146;
+            nick[0] = 146;
+            nick[1] = 0x00;
             nick[2] = 0x00;
-            nick[3] = 0x00;
             fast = 0;
           }
-          if (fakeNick[1] == 0x46 && fakeNick[2] == 0x53 && fakeNick[3] == 0x54) {
+          if (fakeNick[0] == 0x46 && fakeNick[1] == 0x53 && fakeNick[2] == 0x54) {
             Serial.println("fast mode unlocked");
             fast = 1;
             Serial.println(fast);
           }
-          if (fakeNick[1] == 0x4E && fakeNick[2] == 0x52 && fakeNick[3] == 0x4D) {
+          if (fakeNick[0] == 0x4E && fakeNick[1] == 0x52 && fakeNick[2] == 0x4D) {
             Serial.println("awwh no cheats today :(((");
             fast = 0;
           }
-          for (int i = 0; i < 4 ; i ++) {
+          for (int i = 0; i < 3 ; i ++) {
             EEPROM.put(NICK_ADDR[i], nick[i]);
             Serial.println((char)EEPROM.get(NICK_ADDR[i], nick[i]));
           }
@@ -499,9 +499,9 @@ int idleAnimText() {
   display.print("Froggy Run");
   display.setTextColor(WHITE);
   display.setCursor(10, 18);
+  display.print((char)nick[0]);
   display.print((char)nick[1]);
   display.print((char)nick[2]);
-  display.print((char)nick[3]);
   display.print(":");
   display.println(EEPROM.get(SCORE_ADDR, highScore));
   display.display();
