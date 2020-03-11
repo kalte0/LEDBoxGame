@@ -181,7 +181,7 @@ void loop() {
     idleAnim();
     failAnim();
     score = 0;
-  //  display.clearDisplay();
+    //  display.clearDisplay();
   }
 
   if (timeThis - timeLast2 > delayVal) { // how long the obstacles will run
@@ -291,7 +291,7 @@ void loop() {
 
     case NICKNAME://----------------------------------------------------------------------- NICKNAME
       y = key_read(BUTTON);
-      delay(1); 
+      delay(1);
       if (timeThis - timeLast > 600) {
         if (b == 0) {
           lineAll();
@@ -473,15 +473,15 @@ int idleAnim() {
       digitalWrite(ANIM1, LOW);
       digitalWrite(ANIM2, LOW);
       digitalWrite(ANIMJUMP, HIGH);
-      y = 1;
+      z = 1;
     }
-    else if (y == 1) {
+    else if (z == 1) {
       digitalWrite(ANIM1, HIGH);
       digitalWrite(ANIM2, LOW);
       digitalWrite(ANIMJUMP, LOW);
-      y = 0;
+      z = 0;
     }
-    if (hurdle == 0 && y == 0) {
+    if (hurdle == 0 && z == 0) {
       digitalWrite(ANIM1, !(digitalRead(ANIM1))); // toggle the two frames of animation.
       digitalWrite(ANIM2, !(digitalRead(ANIM2)));
     }
@@ -600,16 +600,20 @@ int failAnim() {
       tone(PIEZO, 392.00); // G4
       delay(100);
     }
+    display.clearDisplay();
     noTone(PIEZO);
     nick1 = 0x41;
     nick2 = 0x41;
     nick3 = 0x41;
+    display.setTextSize(3);
+    display.setTextColor(WHITE);
     display.setCursor(SPACE_1 + 8, LETTER_HEIGHT);
     display.print((char)nick1);
     display.setCursor(SPACE_2 + 8, LETTER_HEIGHT);
     display.print((char)nick2);
     display.setCursor(SPACE_3 + 8, LETTER_HEIGHT);
     display.print((char)nick3);
+    display.display();
     state = NICKNAME;
 
   }
